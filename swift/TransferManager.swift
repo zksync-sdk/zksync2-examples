@@ -18,7 +18,7 @@ import ZkSync2
 
 class TransferManager: BaseManager {
     func transfer(callback: (() -> Void)) {
-        let value = BigUInt(1)
+        let value = BigUInt(1000000000000000000)
         
         let nonce = try! zkSync.web3.eth.getTransactionCountPromise(address: EthereumAddress(signer.address)!, onBlock: ZkBlockParameterName.committed.rawValue).wait()
         
@@ -75,7 +75,7 @@ class TransferManager: BaseManager {
     }
     
     func transferViaWallet(callback: (() -> Void)) {
-        let amount = BigUInt(1000000000000)
+        let amount = BigUInt(1000000000000000000)
         
         _ = try! wallet.transfer("0xa61464658AfeAf65CccaaFD3a512b69A83B77618", amount: amount).wait()
         

@@ -159,17 +159,6 @@ class TokenManager: BaseManager {
         
         estimate.parameters.EIP712Meta?.gasPerPubdata = BigUInt(160000)
         
-        let to = EthereumAddress("0xbc6b677377598a79fa1885e02df1894b05bc8b33")!
-        
-        let paymasterAddress = EthereumAddress("0x49720d21525025522040f73da5b3992112bbec00")!
-        let paymasterInput = Paymaster.encodeApprovalBased(
-            to,
-            minimalAllowance: BigUInt(1),
-            input: Data()
-        )
-        
-        estimate.parameters.EIP712Meta?.paymasterParams = PaymasterParams(paymaster: paymasterAddress, paymasterInput: paymasterInput)
-        
         var transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .eip712
         transactionOptions.from = EthereumAddress(signer.address)!
@@ -202,22 +191,6 @@ class TokenManager: BaseManager {
         transaction.envelope.v = BigUInt(unmarshalledSignature.v)
         
         _ = try! zkSync.web3.eth.sendRawTransactionPromise(transaction).wait()
-        
-        let parameters2 = [
-            EthereumAddress("0x36615Cf349d7F6344891B1e7CA7C72883F5dc049")! as AnyObject,
-        ] as [AnyObject]
-        
-        guard let readTransaction = contract.read(
-            "balanceOf",
-            parameters: parameters2,
-            transactionOptions: nil
-        ) else {
-            return
-        }
-        
-        let result2 = try! readTransaction.callPromise().wait()
-        
-        print("result:", result2)
         
         callback()
     }

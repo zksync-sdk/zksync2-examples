@@ -33,7 +33,7 @@ class WithdrawManager: BaseManager {
         
         let contract = zkSync.web3.contract(abiString)!
         
-        let value = BigUInt(100)
+        let value = BigUInt(1000000000000000000)
         
         let inputs = [
             ABI.Element.InOut(name: "_l1Receiver", type: .address)
@@ -60,8 +60,6 @@ class WithdrawManager: BaseManager {
         let nonce = try! zkSync.web3.eth.getTransactionCountPromise(address: EthereumAddress(signer.address)!, onBlock: ZkBlockParameterName.committed.rawValue).wait()
         
         let fee = try! (zkSync as! JsonRpc2_0ZkSync).zksEstimateFee(estimate).wait()
-        
-        let gasPrice = try! zkSync.web3.eth.getGasPricePromise().wait()
         
         estimate.parameters.EIP712Meta?.gasPerPubdata = BigUInt(160000)
         
@@ -105,8 +103,6 @@ class WithdrawManager: BaseManager {
         guard let receipt = transactionReceiptProcessor.waitForTransactionReceipt(hash: txHash) else {
             fatalError("Transaction failed.")
         }
-        
-        print("txHash:", txHash)
         
         assert(receipt.status == .ok)
         
@@ -165,10 +161,10 @@ class WithdrawManager: BaseManager {
                                 
                                 let result = try! defaultEthereumProvider.finalizeEthWithdrawal(
                                     receipt.l1BatchNumber,
-                                    l2MessageIndex: receipt.l1BatchNumber,//111BigUInt(proof.id)
+                                    l2MessageIndex: BigUInt(proof.id),
                                     l2TxNumberInBlock: receipt.l1BatchTxIndex,
                                     message: message,
-                                    proof: proof.proof,//111.compactMap({ Data(fromHex: $0) })
+                                    proof: proof.proof.compactMap({ Data(fromHex: $0) }),
                                     nonce: nonce
                                 ).wait()
                                 
@@ -187,41 +183,12 @@ class WithdrawManager: BaseManager {
     }
     
     func withdrawViaWallet(callback: @escaping (() -> Void)) {
-        let manager = KeystoreManager.init([credentials])
-        self.eth.addKeystoreManager(manager)
+        let amount = BigUInt(1000000000000000000)
         
-        let wallet = ZkSyncWallet(zkSync, ethSigner: signer, feeToken: Token.ETH)
-        
-        let amount = BigUInt(1000000000000)
-        
-        let token: Token = Token(l1Address: "0x36615Cf349d7F6344891B1e7CA7C72883F5dc049", l2Address: Token.DefaultAddress, symbol: "ETH", decimals: 18)
+        let token: Token = Token(l1Address: Token.DefaultAddress, l2Address: Token.DefaultAddress, symbol: "ETH", decimals: 18)
         
         _ = try! wallet.withdraw("0x000000000000000000000000000000000000800a", amount: amount, token: token).wait()
         
-        let l1ERC20Bridge = zkSync.web3.contract(
-            Web3.Utils.IL1Bridge,
-            at: EthereumAddress("0x4ee775658259028d399f4cf9d637b14773472988")
-        )!
-        
-        zkSync.zksMainContract { result in
-            DispatchQueue.global().async {
-                switch result {
-                case .success(let address):
-                    let zkSyncContract = self.eth.contract(
-                        Web3.Utils.IZkSync,
-                        at: EthereumAddress(address)
-                    )!
-                    
-                    let defaultEthereumProvider = DefaultEthereumProvider(self.eth, l1ERC20Bridge: l1ERC20Bridge, zkSyncContract: zkSyncContract, gasProvider: DefaultGasProvider())
-                    
-                    let token = Token(l1Address: "0x36615Cf349d7F6344891B1e7CA7C72883F5dc049", l2Address: Token.DefaultAddress, symbol: "ETH", decimals: 18)
-                    
-                    _ = try! defaultEthereumProvider.deposit(with: token, amount: amount, operatorTips: BigUInt(0), to: "0x36615Cf349d7F6344891B1e7CA7C72883F5dc049").wait()
-                    
-                    callback()
-                default: return
-                }
-            }
-        }
+        callback()
     }
 }

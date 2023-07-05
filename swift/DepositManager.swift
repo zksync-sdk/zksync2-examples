@@ -18,7 +18,7 @@ import ZkSync2
 
 class DepositManager: BaseManager {
     func deposit(callback: @escaping (() -> Void)) {
-        let amount: BigUInt = 1
+        let amount = BigUInt(1000000000000000000)
         
         let manager = KeystoreManager.init([credentials])
         self.eth.addKeystoreManager(manager)
@@ -39,18 +39,22 @@ class DepositManager: BaseManager {
                     
                     let defaultEthereumProvider = DefaultEthereumProvider(self.eth, l1ERC20Bridge: l1ERC20Bridge, zkSyncContract: zkSyncContract, gasProvider: DefaultGasProvider())
                     
-                    let token = Token(l1Address: "0x36615Cf349d7F6344891B1e7CA7C72883F5dc049", l2Address: Token.DefaultAddress, symbol: "ETH", decimals: 18)
+                    let token = Token(l1Address: Token.DefaultAddress, l2Address: Token.DefaultAddress, symbol: "ETH", decimals: 18)
                     
-                    let result = try! defaultEthereumProvider.deposit(with: token, amount: amount, operatorTips: BigUInt(0), to: "0x36615Cf349d7F6344891B1e7CA7C72883F5dc049").wait()
-                    
-                    let receipt = self.transactionReceiptProcessor.waitForTransactionReceipt(hash: result.hash)
-                    
-                    assert(receipt?.status == .ok)
+                    _ = try! defaultEthereumProvider.deposit(with: token, amount: amount, operatorTips: BigUInt(0), to: self.wallet.signer.address).wait()
                     
                     callback()
                 default: return
                 }
             }
         }
+    }
+    
+    func depositViaWallet(callback: @escaping (() -> Void)) {
+        let amount = BigUInt(1000000000000000000)
+        
+        _ = try! self.wallet.deposit("0xf978f4c89ca0e31f83d14b218afaa91389dd7d5d", amount: amount).wait()
+        
+        callback()
     }
 }
