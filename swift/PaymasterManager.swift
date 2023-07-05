@@ -56,7 +56,7 @@ class PaymasterManager: BaseManager {
         let paymasterInput = Paymaster.encodeApprovalBased(
             EthereumAddress("0xbc6b677377598a79fa1885e02df1894b05bc8b33")!,
             minimalAllowance: BigUInt(1),
-            input: Data()
+            paymasterInput: Data()
         )
         
         estimate.parameters.EIP712Meta?.paymasterParams = PaymasterParams(paymaster: paymasterAddress, paymasterInput: paymasterInput)
