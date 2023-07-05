@@ -18,32 +18,21 @@ import ZkSync2
 
 class WithdrawManager: BaseManager {
     func withdraw(callback: @escaping (() -> Void)) {
-        let manager = KeystoreManager.init([credentials])
-        zkSync.web3.eth.web3.addKeystoreManager(manager)
-        self.eth.addKeystoreManager(manager)
+        let contract = zkSync.web3.contract(Web3.Utils.IEthToken)!
         
-        guard let path = Bundle.main.path(forResource: "IEthToken", ofType: "json") else { return }
-        
-        let data = try! Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
-        let jsonResult = try! JSONSerialization.jsonObject(with: data, options: .mutableLeaves)
-        guard let json = jsonResult as? [String: Any], let abi = json["abi"] as? [[String: Any]] else { return }
-        
-        guard let abiData = try? JSONSerialization.data(withJSONObject: abi, options: []) else { return }
-        let abiString = String(data: abiData, encoding: .utf8)!
-        
-        let contract = zkSync.web3.contract(abiString)!
-        
-        let value = BigUInt(1000000000000000000)
+        let value = BigUInt(1_000_000_000_000_000_000)
         
         let inputs = [
             ABI.Element.InOut(name: "_l1Receiver", type: .address)
         ]
         
-        let function = ABI.Element.Function(name: "withdraw",
-                                            inputs: inputs,
-                                            outputs: [],
-                                            constant: false,
-                                            payable: true)
+        let function = ABI.Element.Function(
+            name: "withdraw",
+            inputs: inputs,
+            outputs: [],
+            constant: false,
+            payable: true
+        )
         
         let withdrawFunction: ABI.Element = .function(function)
         
@@ -53,11 +42,16 @@ class WithdrawManager: BaseManager {
         
         let calldata = withdrawFunction.encodeParameters(parameters)!
         
-        var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress.L2EthTokenAddress, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, value: value, data: calldata)
+        var estimate = EthereumTransaction.createFunctionCallTransaction(
+            from: EthereumAddress(signer.address)!,
+            to: EthereumAddress.L2EthTokenAddress,
+            gasPrice: BigUInt.zero,
+            gasLimit: BigUInt.zero,
+            value: value,
+            data: calldata
+        )
         
         estimate.envelope.parameters.chainID = signer.domain.chainId
-        
-        let nonce = try! zkSync.web3.eth.getTransactionCountPromise(address: EthereumAddress(signer.address)!, onBlock: ZkBlockParameterName.committed.rawValue).wait()
         
         let fee = try! zkSync.zksEstimateFee(estimate).wait()
         
@@ -78,19 +72,16 @@ class WithdrawManager: BaseManager {
         var ethereumParameters = EthereumParameters(from: transactionOptions)
         ethereumParameters.EIP712Meta = estimate.parameters.EIP712Meta
         
-        var transaction = EthereumTransaction(type: .eip712,
-                                              to: estimate.to,
-                                              nonce: nonce,
-                                              chainID: chainId,
-                                              data: estimate.data,
-                                              parameters: ethereumParameters)
+        var transaction = EthereumTransaction(
+            type: .eip712,
+            to: estimate.to,
+            nonce: nonce,
+            chainID: chainId,
+            data: estimate.data,
+            parameters: ethereumParameters
+        )
         
-        let signature = signer.signTypedData(signer.domain, typedData: transaction).addHexPrefix()
-        
-        let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
-        transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
-        transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
-        transaction.envelope.v = BigUInt(unmarshalledSignature.v)
+        signTransaction(&transaction)
         
         let result = try! contract.web3.eth.sendRawTransactionPromise(transaction).wait()
         
@@ -108,19 +99,19 @@ class WithdrawManager: BaseManager {
         
         let l1ERC20Bridge = zkSync.web3.contract(
             Web3.Utils.IL1Bridge,
-            at: EthereumAddress("0x36615cf349d7f6344891b1e7ca7c72883f5dc049")
+            at: EthereumAddress("0x4ee775658259028d399f4cf9d637b14773472988")
         )!
         
         zkSync.zksMainContract { result in
             DispatchQueue.global().async {
                 switch result {
                 case .success(let address):
-                    let zkSyncContract = self.eth.contract(
+                    let zkSyncContract = self.ethereum.contract(
                         Web3.Utils.IZkSync,
                         at: EthereumAddress(address)
                     )!
                     
-                    let defaultEthereumProvider = DefaultEthereumProvider(self.eth, l1ERC20Bridge: l1ERC20Bridge, zkSyncContract: zkSyncContract, gasProvider: DefaultGasProvider())
+                    let defaultEthereumProvider = DefaultEthereumProvider(self.ethereum, l1ERC20Bridge: l1ERC20Bridge, zkSyncContract: zkSyncContract, gasProvider: DefaultGasProvider())
                     
                     let topic = "L1MessageSent(address,bytes32,bytes)"
                     let log = receipt.logs.filter({
@@ -130,45 +121,30 @@ class WithdrawManager: BaseManager {
                         return false
                     })[index]
                     
-                    guard let l2tol1log = receipt.l2ToL1Logs?.filter({
+                    let l2tol1log = receipt.l2ToL1Logs!.filter({
                         if $0.sender.address == ZkSyncAddresses.MessengerAddress {
                             return true
                         }
                         return false
-                    })[index] else {
-                        fatalError("No l2 to l1 log found.")
-                    }
+                    })[index]
                     
                     self.zkSync.zksGetL2ToL1LogProof(txHash, logIndex: Int(l2tol1log.logIndex)) { result in
                         DispatchQueue.global().async {
                             switch result {
                             case .success(let proof):
-                                guard let path = Bundle.main.path(forResource: "IL1Messenger", ofType: "json") else { return }
-                                
-                                let data = try! Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
-                                let jsonResult = try! JSONSerialization.jsonObject(with: data, options: .mutableLeaves)
-                                guard let json = jsonResult as? [String: Any], let abi = json["abi"] as? [[String: Any]] else { return }
-                                
-                                guard let abiData = try? JSONSerialization.data(withJSONObject: abi, options: []) else { return }
-                                let abiString = String(data: abiData, encoding: .utf8)!
-                                
-                                let contract = self.zkSync.web3.contract(abiString)!
+                                let contract = self.zkSync.web3.contract(Web3.Utils.IL1Messenger)!
                                 
                                 let eventData = contract.parseEvent(log).eventData
                                 let message = eventData?["_message"] as? Data ?? Data()
                                 
-                                let nonce = try! self.zkSync.web3.eth.getTransactionCountPromise(address: EthereumAddress(self.signer.address)!, onBlock: ZkBlockParameterName.committed.rawValue).wait()
-                                
-                                let result = try! defaultEthereumProvider.finalizeEthWithdrawal(
+                                _ = try! defaultEthereumProvider.finalizeEthWithdrawal(
                                     receipt.l1BatchNumber,
                                     l2MessageIndex: BigUInt(proof.id),
                                     l2TxNumberInBlock: receipt.l1BatchTxIndex,
                                     message: message,
                                     proof: proof.proof.compactMap({ Data(fromHex: $0) }),
-                                    nonce: nonce
+                                    nonce: self.nonce
                                 ).wait()
-                                
-                                print(result.hash)
                                 
                                 callback()
                             case .failure(let error):
@@ -176,18 +152,21 @@ class WithdrawManager: BaseManager {
                             }
                         }
                     }
-                default: return
+                case .failure(let error):
+                    print("Error:", error)
                 }
             }
         }
     }
     
     func withdrawViaWallet(callback: @escaping (() -> Void)) {
-        let amount = BigUInt(1000000000000000000)
+        let amount = BigUInt(1_000_000_000_000_000_000)
         
-        let token: Token = Token(l1Address: Token.DefaultAddress, l2Address: Token.DefaultAddress, symbol: "ETH", decimals: 18)
-        
-        _ = try! wallet.withdraw("0x000000000000000000000000000000000000800a", amount: amount, token: token).wait()
+        _ = try! wallet.withdraw(
+            "0x000000000000000000000000000000000000800a",
+            amount: amount,
+            token: Token.ETH
+        ).wait()
         
         callback()
     }

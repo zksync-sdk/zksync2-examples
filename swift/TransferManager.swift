@@ -18,16 +18,14 @@ import ZkSync2
 
 class TransferManager: BaseManager {
     func transfer(callback: (() -> Void)) {
-        let value = BigUInt(1000000000000000000)
-        
-        let nonce = try! zkSync.web3.eth.getTransactionCountPromise(address: EthereumAddress(signer.address)!, onBlock: ZkBlockParameterName.committed.rawValue).wait()
+        let value = BigUInt(1_000_000_000_000_000_000)
         
         var estimate = EthereumTransaction.createFunctionCallTransaction(
             from: EthereumAddress(signer.address)!,
             to: EthereumAddress("0xa61464658AfeAf65CccaaFD3a512b69A83B77618")!,
             gasPrice: BigUInt.zero,
             gasLimit: BigUInt.zero,
-            data: Data(hex: "0x")
+            data: Data()
         )
         
         let fee = try! zkSync.zksEstimateFee(estimate).wait()
@@ -58,12 +56,7 @@ class TransferManager: BaseManager {
             parameters: ethereumParameters
         )
         
-        let signature = signer.signTypedData(signer.domain, typedData: transaction).addHexPrefix()
-        
-        let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
-        transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
-        transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
-        transaction.envelope.v = BigUInt(unmarshalledSignature.v)
+        signTransaction(&transaction)
         
         let result = try! zkSync.web3.eth.sendRawTransactionPromise(transaction).wait()
         
@@ -75,9 +68,12 @@ class TransferManager: BaseManager {
     }
     
     func transferViaWallet(callback: (() -> Void)) {
-        let amount = BigUInt(1000000000000000000)
+        let amount = BigUInt(1_000_000_000_000_000_000)
         
-        _ = try! wallet.transfer("0xa61464658AfeAf65CccaaFD3a512b69A83B77618", amount: amount).wait()
+        _ = try! wallet.transfer(
+            "0xa61464658AfeAf65CccaaFD3a512b69A83B77618",
+            amount: amount
+        ).wait()
         
         callback()
     }

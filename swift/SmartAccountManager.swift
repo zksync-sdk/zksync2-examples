@@ -39,9 +39,8 @@ class SmartAccountManager: BaseManager {
         
         let elementFunction: ABI.Element = .function(function)
         
-        let address = EthereumAddress("0xbc6b677377598a79fa1885e02df1894b05bc8b33")
         let parameters: [AnyObject] = [
-            address as AnyObject
+            EthereumAddress("0xbc6b677377598a79fa1885e02df1894b05bc8b33")! as AnyObject
         ]
         
         guard var encodedCallData = elementFunction.encodeParameters(parameters) else {
@@ -53,9 +52,16 @@ class SmartAccountManager: BaseManager {
             encodedCallData = encodedCallData.dropFirst()
         }
         
-        let nonce = try! zkSync.web3.eth.getTransactionCountPromise(address: EthereumAddress(signer.address)!, onBlock: ZkBlockParameterName.committed.rawValue).wait()
-        
-        let estimate = EthereumTransaction.create2AccountTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecodeData, deps: [bytecodeData], calldata: encodedCallData, salt: Data(), chainId: signer.domain.chainId)
+        let estimate = EthereumTransaction.create2AccountTransaction(
+            from: EthereumAddress(signer.address)!,
+            gasPrice: BigUInt.zero,
+            gasLimit: BigUInt.zero,
+            bytecode: bytecodeData,
+            deps: [bytecodeData],
+            calldata: encodedCallData,
+            salt: Data(),
+            chainId: signer.domain.chainId
+        )
         
         let chainID = signer.domain.chainId
         let gasPrice = try! zkSync.web3.eth.getGasPrice()
@@ -78,14 +84,16 @@ class SmartAccountManager: BaseManager {
         ethereumParameters.EIP712Meta = estimate.parameters.EIP712Meta
         ethereumParameters.EIP712Meta?.factoryDeps = [bytecodeData]
         
-        var transaction = EthereumTransaction(type: .eip712, to: estimate.to, nonce: nonce, chainID: chainId, data: estimate.data, parameters: ethereumParameters)
+        var transaction = EthereumTransaction(
+            type: .eip712,
+            to: estimate.to,
+            nonce: nonce,
+            chainID: chainId,
+            data: estimate.data,
+            parameters: ethereumParameters
+        )
         
-        let signature = signer.signTypedData(signer.domain, typedData: transaction).addHexPrefix()
-        
-        let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
-        transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
-        transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
-        transaction.envelope.v = BigUInt(unmarshalledSignature.v)
+        signTransaction(&transaction)
         
         guard let message = transaction.encode(for: .transaction) else {
             fatalError("Failed to encode transaction.")

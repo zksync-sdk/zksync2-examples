@@ -59,8 +59,6 @@ class TokenManager: BaseManager {
             encodedCallData = encodedCallData.dropFirst()
         }
         
-        let nonce = try! zkSync.web3.eth.getTransactionCountPromise(address: EthereumAddress(signer.address)!, onBlock: ZkBlockParameterName.committed.rawValue).wait()
-        
         let contractTransaction = EthereumTransaction.create2ContractTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecodeData, deps: [bytecodeData], calldata: encodedCallData, salt: Data(), chainId: signer.domain.chainId)
         
         let chainID = signer.domain.chainId
@@ -95,12 +93,7 @@ class TokenManager: BaseManager {
             parameters: ethereumParameters
         )
         
-        let signature = signer.signTypedData(signer.domain, typedData: transaction).addHexPrefix()
-        
-        let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
-        transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
-        transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
-        transaction.envelope.v = BigUInt(unmarshalledSignature.v)
+        signTransaction(&transaction)
         
         guard let message = transaction.encode(for: .transaction) else {
             fatalError("Failed to encode transaction.")
@@ -116,50 +109,39 @@ class TokenManager: BaseManager {
     }
     
     func mintToken(callback: (() -> Void)) {
-        let manager = KeystoreManager.init([credentials])
-        zkSync.web3.eth.web3.addKeystoreManager(manager)
-        self.eth.addKeystoreManager(manager)
-        
-        guard let path = Bundle.main.path(forResource: "Token", ofType: "json") else { return }
-        
-        let data = try! Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
-        let jsonResult = try! JSONSerialization.jsonObject(with: data, options: .mutableLeaves)
-        guard let json = jsonResult as? [String: Any], let abi = json["abi"] as? [[String: Any]] else { return }
-        
-        guard let abiData = try? JSONSerialization.data(withJSONObject: abi, options: []) else { return }
-        let abiString = String(data: abiData, encoding: .utf8)!
-        
-        let contractAddress = EthereumAddress("0xbc6b677377598a79fa1885e02df1894b05bc8b33")!
-        
-        let contract = zkSync.web3.contract(abiString, at: contractAddress)!
+        let contract = zkSync.web3.contract(Web3.Utils.IToken, at: EthereumAddress("0xbc6b677377598a79fa1885e02df1894b05bc8b33")!)!
         
         let value = BigUInt(100)
         
-        let parameters1 = [
+        let parameters = [
             EthereumAddress("0x36615Cf349d7F6344891B1e7CA7C72883F5dc049")! as AnyObject,
             value as AnyObject
         ] as [AnyObject]
         
-        var transactionOptions1 = TransactionOptions.defaultOptions
-        transactionOptions1.from = EthereumAddress(signer.address)!
+        var transactionOptions = TransactionOptions.defaultOptions
+        transactionOptions.from = EthereumAddress(signer.address)!
         
         guard let writeTransaction = contract.write(
             "mint",
-            parameters: parameters1,
-            transactionOptions: transactionOptions1
+            parameters: parameters,
+            transactionOptions: transactionOptions
         ) else {
             return
         }
         
-        var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: writeTransaction.transaction.to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: writeTransaction.transaction.data)
-        
-        let nonce = try! zkSync.web3.eth.getTransactionCountPromise(address: EthereumAddress(signer.address)!, onBlock: ZkBlockParameterName.committed.rawValue).wait()
+        var estimate = EthereumTransaction.createFunctionCallTransaction(
+            from: EthereumAddress(signer.address)!,
+            to: writeTransaction.transaction.to,
+            gasPrice: BigUInt.zero,
+            gasLimit: BigUInt.zero,
+            data: writeTransaction.transaction.data
+        )
         
         let fee = try! zkSync.zksEstimateFee(estimate).wait()
         
         estimate.parameters.EIP712Meta?.gasPerPubdata = BigUInt(160000)
         
-        var transactionOptions = TransactionOptions.defaultOptions
+        transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .eip712
         transactionOptions.from = EthereumAddress(signer.address)!
         transactionOptions.to = estimate.to
@@ -183,16 +165,19 @@ class TokenManager: BaseManager {
             parameters: ethereumParameters
         )
         
-        let signature = signer.signTypedData(signer.domain, typedData: transaction).addHexPrefix()
-        
-        let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
-        transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
-        transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
-        transaction.envelope.v = BigUInt(unmarshalledSignature.v)
+        signTransaction(&transaction)
         
         _ = try! zkSync.web3.eth.sendRawTransactionPromise(transaction).wait()
         
         callback()
+    }
+    
+    func getAllTokens(callback: @escaping (() -> Void)) {
+        zkSync.zksGetConfirmedTokens(0, limit: 255) { result in
+            print("tokens:", result)
+            
+            callback()
+        }
     }
     
     func tokenBalance(callback: (() -> Void)) {

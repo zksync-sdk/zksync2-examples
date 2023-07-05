@@ -18,18 +18,31 @@ import ZkSync2
 
 class SmartContractManager: BaseManager {
     func deploySmartContract(callback: (() -> Void)) {
-        let nonce = try! zkSync.web3.eth.getTransactionCountPromise(address: EthereumAddress(signer.address)!, onBlock: ZkBlockParameterName.committed.rawValue).wait()
-        
         let url = Bundle.main.url(forResource: "Storage", withExtension: "zbin")!
         let bytecodeBytes = try! Data(contentsOf: url)
         
-        let contractTransaction = EthereumTransaction.create2ContractTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecodeBytes, deps: [bytecodeBytes], calldata: Data(), salt: Data(), chainId: signer.domain.chainId)
+        let contractTransaction = EthereumTransaction.create2ContractTransaction(
+            from: EthereumAddress(signer.address)!,
+            gasPrice: BigUInt.zero,
+            gasLimit: BigUInt.zero,
+            bytecode: bytecodeBytes,
+            deps: [bytecodeBytes],
+            calldata: Data(),
+            salt: Data(),
+            chainId: signer.domain.chainId
+        )
         
         let precomputedAddress = ContractDeployer.computeL2Create2Address(EthereumAddress(signer.address)!, bytecode: bytecodeBytes, constructor: Data(), salt: Data())
         
         let chainID = signer.domain.chainId
         
-        var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: contractTransaction.to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: contractTransaction.data)
+        var estimate = EthereumTransaction.createFunctionCallTransaction(
+            from: EthereumAddress(signer.address)!,
+            to: contractTransaction.to,
+            gasPrice: BigUInt.zero,
+            gasLimit: BigUInt.zero,
+            data: contractTransaction.data
+        )
         
         estimate.parameters.EIP712Meta?.factoryDeps = [bytecodeBytes]
         
@@ -59,12 +72,7 @@ class SmartContractManager: BaseManager {
             parameters: ethereumParameters
         )
         
-        let signature = signer.signTypedData(signer.domain, typedData: transaction).addHexPrefix()
-        
-        let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
-        transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
-        transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
-        transaction.envelope.v = BigUInt(unmarshalledSignature.v)
+        signTransaction(&transaction)
         
         guard let message = transaction.encode(for: .transaction) else {
             fatalError("Failed to encode transaction.")
