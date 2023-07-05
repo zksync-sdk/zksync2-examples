@@ -33,7 +33,7 @@ class SmartContractManager: BaseManager {
         
         estimate.parameters.EIP712Meta?.factoryDeps = [bytecodeBytes]
         
-        let fee = try! (zkSync as! JsonRpc2_0ZkSync).zksEstimateFee(estimate).wait()
+        let fee = try! zkSync.zksEstimateFee(estimate).wait()
         
         var transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .eip712

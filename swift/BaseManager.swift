@@ -22,7 +22,7 @@ class BaseManager {
     
     let credentials = Credentials(BaseManager.privateKey)
     
-    let zkSync: ZkSync = JsonRpc2_0ZkSync(URL(string: "http://127.0.0.1:3050")!)
+    let zkSync: ZkSync = ZkSyncImpl(URL(string: "http://127.0.0.1:3050")!)
     let eth: web3 = try! Web3.new(URL(string: "http://127.0.0.1:8545")!)
     
     var chainId: BigUInt {

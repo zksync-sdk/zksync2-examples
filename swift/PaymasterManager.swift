@@ -57,9 +57,7 @@ class PaymasterManager: BaseManager {
         
         let nonce = try! zkSync.web3.eth.getTransactionCountPromise(address: EthereumAddress(signer.address)!, onBlock: ZkBlockParameterName.committed.rawValue).wait()
         
-        let fee = try! (zkSync as! JsonRpc2_0ZkSync).zksEstimateFee(estimate).wait()
-        
-        let gasPrice = try! zkSync.web3.eth.getGasPricePromise().wait()
+        let fee = try! zkSync.zksEstimateFee(estimate).wait()
         
         estimate.parameters.EIP712Meta?.gasPerPubdata = BigUInt(160000)
         

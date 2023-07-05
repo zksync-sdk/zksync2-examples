@@ -59,7 +59,7 @@ class WithdrawManager: BaseManager {
         
         let nonce = try! zkSync.web3.eth.getTransactionCountPromise(address: EthereumAddress(signer.address)!, onBlock: ZkBlockParameterName.committed.rawValue).wait()
         
-        let fee = try! (zkSync as! JsonRpc2_0ZkSync).zksEstimateFee(estimate).wait()
+        let fee = try! zkSync.zksEstimateFee(estimate).wait()
         
         estimate.parameters.EIP712Meta?.gasPerPubdata = BigUInt(160000)
         
@@ -139,7 +139,7 @@ class WithdrawManager: BaseManager {
                         fatalError("No l2 to l1 log found.")
                     }
                     
-                    (self.zkSync as! JsonRpc2_0ZkSync).zksGetL2ToL1LogProof(txHash, logIndex: Int(l2tol1log.logIndex)) { result in
+                    self.zkSync.zksGetL2ToL1LogProof(txHash, logIndex: Int(l2tol1log.logIndex)) { result in
                         DispatchQueue.global().async {
                             switch result {
                             case .success(let proof):

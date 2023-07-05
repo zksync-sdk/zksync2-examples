@@ -30,7 +30,7 @@ class TransferManager: BaseManager {
             data: Data(hex: "0x")
         )
         
-        let fee = try! (zkSync as! JsonRpc2_0ZkSync).zksEstimateFee(estimate).wait()
+        let fee = try! zkSync.zksEstimateFee(estimate).wait()
         
         estimate.parameters.EIP712Meta?.gasPerPubdata = fee.gasPerPubdataLimit
         
