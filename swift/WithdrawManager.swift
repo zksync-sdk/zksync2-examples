@@ -20,7 +20,7 @@ class WithdrawManager: BaseManager {
     func withdraw(callback: @escaping (() -> Void)) {
         let contract = zkSync.web3.contract(Web3.Utils.IEthToken)!
         
-        let value = BigUInt(1_000_000_000_000_000_000)
+        let value = BigUInt(1_000_000_000_000)
         
         let inputs = [
             ABI.Element.InOut(name: "_l1Receiver", type: .address)
@@ -37,7 +37,7 @@ class WithdrawManager: BaseManager {
         let withdrawFunction: ABI.Element = .function(function)
         
         let parameters: [AnyObject] = [
-            EthereumAddress("0x000000000000000000000000000000000000800a")! as AnyObject,
+            EthereumAddress(signer.address)! as AnyObject,
         ]
         
         let calldata = withdrawFunction.encodeParameters(parameters)!
@@ -63,6 +63,7 @@ class WithdrawManager: BaseManager {
         transactionOptions.to = estimate.to
         transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerGas)
         transactionOptions.maxFeePerGas = .manual(fee.maxFeePerGas)
+        transactionOptions.value = value
         transactionOptions.nonce = .manual(nonce)
         transactionOptions.chainID = chainId
         
@@ -160,10 +161,10 @@ class WithdrawManager: BaseManager {
     }
     
     func withdrawViaWallet(callback: @escaping (() -> Void)) {
-        let amount = BigUInt(1_000_000_000_000_000_000)
+        let amount = BigUInt(1_000_000_000_000)
         
         _ = try! wallet.withdraw(
-            "0x000000000000000000000000000000000000800a",
+            signer.address,
             amount: amount,
             token: Token.ETH
         ).wait()

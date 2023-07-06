@@ -18,12 +18,12 @@ import ZkSync2
 #endif
 
 class BaseManager {
-    static let privateKey = "0x7726827caac94a7f9e1b160f7ea819f172f7b6f9d2a97f992c38edeab82d4110"
+    static let privateKey = "0x25819a28cfe7d5fe559a566d33f5d2e282402f01d4e293429c925bb276fc77a3"
     
     let credentials = Credentials(BaseManager.privateKey)
     
-    let zkSync: ZkSync = ZkSyncImpl(URL(string: "http://127.0.0.1:3050")!)
-    let ethereum: web3 = try! Web3.new(URL(string: "http://127.0.0.1:8545")!)
+    let zkSync: ZkSync = ZkSyncImpl(URL(string: "https://testnet.era.zksync.dev")!)
+    let ethereum: web3 = try! Web3.new(URL(string: "https://rpc.ankr.com/eth_goerli")!)
     
     init() {
         let keystoreManager = KeystoreManager([credentials])

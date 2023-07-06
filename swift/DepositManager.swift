@@ -39,13 +39,13 @@ class DepositManager: BaseManager {
                         gasProvider: DefaultGasProvider()
                     )
                     
-                    let amount = BigUInt(1_000_000_000_000_000_000)
+                    let amount = BigUInt(1_000_000_000_000)
                     
                     _ = try! defaultEthereumProvider.deposit(
                         with: Token.ETH,
                         amount: amount,
                         operatorTips: BigUInt(0),
-                        to: self.wallet.signer.address
+                        to: self.signer.address
                     ).wait()
                     
                     callback()
@@ -57,10 +57,10 @@ class DepositManager: BaseManager {
     }
     
     func depositViaWallet(callback: @escaping (() -> Void)) {
-        let amount = BigUInt(1_000_000_000_000_000_000)
+        let amount = BigUInt(1_000_000_000_000)
         
         _ = try! wallet.deposit(
-            "0xf978f4c89ca0e31f83d14b218afaa91389dd7d5d",
+            signer.address,
             amount: amount
         ).wait()
         
