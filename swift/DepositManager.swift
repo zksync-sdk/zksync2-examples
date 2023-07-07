@@ -29,7 +29,7 @@ class DepositManager: BaseManager {
                     
                     let l1ERC20Bridge = self.zkSync.web3.contract(
                         Web3.Utils.IL1Bridge,
-                        at: EthereumAddress("0x4ee775658259028d399f4cf9d637b14773472988")
+                        at: EthereumAddress(self.signer.address)
                     )!
                     
                     let defaultEthereumProvider = DefaultEthereumProvider(

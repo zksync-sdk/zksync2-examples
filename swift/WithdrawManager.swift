@@ -100,7 +100,7 @@ class WithdrawManager: BaseManager {
         
         let l1ERC20Bridge = zkSync.web3.contract(
             Web3.Utils.IL1Bridge,
-            at: EthereumAddress("0x4ee775658259028d399f4cf9d637b14773472988")
+            at: EthereumAddress(signer.address)
         )!
         
         zkSync.zksMainContract { result in
