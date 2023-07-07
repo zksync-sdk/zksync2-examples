@@ -20,7 +20,7 @@ class WithdrawManager: BaseManager {
     func withdraw(callback: @escaping (() -> Void)) {
         let contract = zkSync.web3.contract(Web3.Utils.IEthToken)!
         
-        let value = BigUInt(1_000_000_000_000)
+        let value = BigUInt(3_000_000_000_000)
         
         let inputs = [
             ABI.Element.InOut(name: "_l1Receiver", type: .address)
@@ -161,7 +161,7 @@ class WithdrawManager: BaseManager {
     }
     
     func withdrawViaWallet(callback: @escaping (() -> Void)) {
-        let amount = BigUInt(1_000_000_000_000)
+        let amount = BigUInt(2_000_000_000_000)
         
         _ = try! wallet.withdraw(
             signer.address,
