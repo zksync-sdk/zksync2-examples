@@ -10,10 +10,10 @@ import BigInt
 #if canImport(web3swift)
 import web3swift
 #else
-import web3swift_zksync
+import web3swift_zksync2
 #endif
-#if canImport(ZkSync2)
-import ZkSync2
+#if canImport(zkSync2_swift)
+import zkSync2_swift
 #endif
 
 class SmartAccountManager: BaseManager {
