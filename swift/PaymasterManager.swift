@@ -18,11 +18,9 @@ import ZkSync2
 
 class PaymasterManager: BaseManager {
     func mintTokenUsingPaymaster(callback: (() -> Void)) {
-        let contractAddress = EthereumAddress("0xbc6b677377598a79fa1885e02df1894b05bc8b33")!
+        let contract = zkSync.web3.contract(Web3.Utils.IToken, at: EthereumAddress("0xbc6b677377598a79fa1885e02df1894b05bc8b33")!)!
         
-        let contract = zkSync.web3.contract(Web3.Utils.IToken, at: contractAddress)!
-        
-        let value = BigUInt(100)
+        let value = BigUInt(1_000)
         
         let parameters = [
             EthereumAddress(signer.address)! as AnyObject,

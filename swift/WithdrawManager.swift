@@ -20,7 +20,7 @@ class WithdrawManager: BaseManager {
     func withdraw(callback: @escaping (() -> Void)) {
         let contract = zkSync.web3.contract(Web3.Utils.IEthToken)!
         
-        let value = BigUInt(3_000_000_000_000)
+        let value = BigUInt(1_000_000_000_000)
         
         let inputs = [
             ABI.Element.InOut(name: "_l1Receiver", type: .address)
@@ -86,12 +86,9 @@ class WithdrawManager: BaseManager {
         
         let result = try! contract.web3.eth.sendRawTransactionPromise(transaction).wait()
         
-        self.finalizeWithdraw(txHash: result.hash, index: 0) {
-            callback()
-        }
-    }
-    
-    func finalizeWithdraw(txHash: String, index: Int, callback: @escaping (() -> Void)) {
+        let txHash = result.hash
+        let index = 0
+        
         guard let receipt = transactionReceiptProcessor.waitForTransactionReceipt(hash: txHash) else {
             fatalError("Transaction failed.")
         }
@@ -161,7 +158,7 @@ class WithdrawManager: BaseManager {
     }
     
     func withdrawViaWallet(callback: @escaping (() -> Void)) {
-        let amount = BigUInt(2_000_000_000_000)
+        let amount = BigUInt(1_000_000_000_000)
         
         _ = try! wallet.withdraw(
             signer.address,

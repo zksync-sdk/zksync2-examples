@@ -111,10 +111,10 @@ class TokenManager: BaseManager {
     func mintToken(callback: (() -> Void)) {
         let contract = zkSync.web3.contract(Web3.Utils.IToken, at: EthereumAddress("0xbc6b677377598a79fa1885e02df1894b05bc8b33")!)!
         
-        let value = BigUInt(100)
+        let value = BigUInt(1_000)
         
         let parameters = [
-            EthereumAddress("0x36615Cf349d7F6344891B1e7CA7C72883F5dc049")! as AnyObject,
+            EthereumAddress(signer.address)! as AnyObject,
             value as AnyObject
         ] as [AnyObject]
         

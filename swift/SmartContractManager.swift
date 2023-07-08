@@ -19,14 +19,14 @@ import ZkSync2
 class SmartContractManager: BaseManager {
     func deploySmartContract(callback: (() -> Void)) {
         let url = Bundle.main.url(forResource: "Storage", withExtension: "zbin")!
-        let bytecodeBytes = try! Data(contentsOf: url)
+        let bytecodeData = try! Data(contentsOf: url)
         
         let contractTransaction = EthereumTransaction.create2ContractTransaction(
             from: EthereumAddress(signer.address)!,
             gasPrice: BigUInt.zero,
             gasLimit: BigUInt.zero,
-            bytecode: bytecodeBytes,
-            deps: [bytecodeBytes],
+            bytecode: bytecodeData,
+            deps: [bytecodeData],
             calldata: Data(),
             salt: Data(),
             chainId: signer.domain.chainId
@@ -34,7 +34,7 @@ class SmartContractManager: BaseManager {
         
         let precomputedAddress = ContractDeployer.computeL2Create2Address(
             EthereumAddress(signer.address)!,
-            bytecode: bytecodeBytes,
+            bytecode: bytecodeData,
             constructor: Data(),
             salt: Data()
         )
@@ -49,7 +49,7 @@ class SmartContractManager: BaseManager {
             data: contractTransaction.data
         )
         
-        estimate.parameters.EIP712Meta?.factoryDeps = [bytecodeBytes]
+        estimate.parameters.EIP712Meta?.factoryDeps = [bytecodeData]
         
         let fee = try! zkSync.zksEstimateFee(estimate).wait()
         
@@ -66,7 +66,7 @@ class SmartContractManager: BaseManager {
         
         var ethereumParameters = EthereumParameters(from: transactionOptions)
         ethereumParameters.EIP712Meta = estimate.parameters.EIP712Meta
-        ethereumParameters.EIP712Meta?.factoryDeps = [bytecodeBytes]
+        ethereumParameters.EIP712Meta?.factoryDeps = [bytecodeData]
         
         var transaction = EthereumTransaction(
             type: .eip712,
@@ -95,8 +95,8 @@ class SmartContractManager: BaseManager {
     
     func deploySmartContractViaWallet(callback: (() -> Void)) {
         let url = Bundle.main.url(forResource: "Storage", withExtension: "zbin")!
-        let bytecodeBytes = try! Data(contentsOf: url)
-        let result = try! wallet.deploy(bytecodeBytes).wait()
+        let bytecodeData = try! Data(contentsOf: url)
+        let result = try! wallet.deploy(bytecodeData).wait()
         
         let receipt = transactionReceiptProcessor.waitForTransactionReceipt(hash: result.hash)
         
