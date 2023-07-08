@@ -46,7 +46,7 @@ class BaseManager {
     }
     
     var wallet: ZkSyncWallet {
-        ZkSyncWallet(zkSync, ethSigner: signer, feeToken: Token.ETH)
+        ZkSyncWallet(zkSync, ethereum: ethereum, ethSigner: signer, feeToken: Token.ETH)
     }
     
     var transactionReceiptProcessor: ZkSyncTransactionReceiptProcessor {
