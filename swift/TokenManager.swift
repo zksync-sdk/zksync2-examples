@@ -108,8 +108,8 @@ class TokenManager: BaseManager {
         callback()
     }
     
-    func mintToken(callback: (() -> Void)) {
-        let contract = zkSync.web3.contract(Web3.Utils.IToken, at: EthereumAddress("0xbc6b677377598a79fa1885e02df1894b05bc8b33")!)!
+    func mintToken(tokenAddress: String, callback: (() -> Void)) {
+        let contract = zkSync.web3.contract(Web3.Utils.IToken, at: EthereumAddress(tokenAddress)!)!
         
         let value = BigUInt(1_000)
         
@@ -180,8 +180,8 @@ class TokenManager: BaseManager {
         }
     }
     
-    func tokenBalance(callback: (() -> Void)) {
-        let balance = try! wallet.getBalance(Token(l1Address: "", l2Address: "0xbc6b677377598a79fa1885e02df1894b05bc8b33", symbol: "", decimals: 18)).wait()
+    func tokenBalance(tokenAddress: String, callback: (() -> Void)) {
+        let balance = try! wallet.getBalance(Token(l1Address: "", l2Address: tokenAddress, symbol: "", decimals: 18)).wait()
         
         print("balance:", balance)
         

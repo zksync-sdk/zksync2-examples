@@ -17,12 +17,10 @@ import zkSync2_swift
 #endif
 
 class TransferManager: BaseManager {
-    func transfer(callback: (() -> Void)) {
-        let value = BigUInt(1_000_000_000_000)
-        
+    func transfer(toAddress: String, value: BigUInt, callback: (() -> Void)) {
         var estimate = EthereumTransaction.createFunctionCallTransaction(
             from: EthereumAddress(signer.address)!,
-            to: EthereumAddress("0x082b1BB53fE43810f646dDd71AA2AB201b4C6b04")!,
+            to: EthereumAddress(toAddress)!,
             gasPrice: BigUInt.zero,
             gasLimit: BigUInt.zero,
             data: Data()
@@ -67,12 +65,10 @@ class TransferManager: BaseManager {
         callback()
     }
     
-    func transferViaWallet(callback: (() -> Void)) {
-        let amount = BigUInt(1_000_000_000_000)
-        
+    func transferViaWallet(toAddress: String, value: BigUInt, callback: (() -> Void)) {
         _ = try! wallet.transfer(
-            "0x082b1BB53fE43810f646dDd71AA2AB201b4C6b04",
-            amount: amount
+            toAddress,
+            amount: value
         ).wait()
         
         callback()

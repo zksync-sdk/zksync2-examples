@@ -105,8 +105,8 @@ class SmartContractManager: BaseManager {
         callback()
     }
     
-    func testSmartContract(callback: (() -> Void)) {
-        let contractAddress = EthereumAddress("0xf3ea0f675900d6aa31b2a7a30612a70e83989052")!
+    func testSmartContract(smartContractAddress: String, callback: (() -> Void)) {
+        let contractAddress = EthereumAddress(smartContractAddress)!
         
         let contract = zkSync.web3.contract("[{\"inputs\":[],\"name\":\"get\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"set\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]", at: contractAddress)!
         

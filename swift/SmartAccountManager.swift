@@ -17,7 +17,7 @@ import zkSync2_swift
 #endif
 
 class SmartAccountManager: BaseManager {
-    func deploySmartAccount(callback: (() -> Void)) {
+    func deploySmartAccount(tokenAddress: String, callback: (() -> Void)) {
         guard let path = Bundle.main.path(forResource: "Paymaster", ofType: "json") else { return }
         
         let data = try! Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
@@ -40,7 +40,7 @@ class SmartAccountManager: BaseManager {
         let elementFunction: ABI.Element = .function(function)
         
         let parameters: [AnyObject] = [
-            EthereumAddress("0xbc6b677377598a79fa1885e02df1894b05bc8b33")! as AnyObject
+            EthereumAddress(tokenAddress)! as AnyObject
         ]
         
         guard var encodedCallData = elementFunction.encodeParameters(parameters) else {

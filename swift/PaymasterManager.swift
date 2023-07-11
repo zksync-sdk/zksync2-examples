@@ -17,8 +17,8 @@ import zkSync2_swift
 #endif
 
 class PaymasterManager: BaseManager {
-    func mintTokenUsingPaymaster(callback: (() -> Void)) {
-        let contract = zkSync.web3.contract(Web3.Utils.IToken, at: EthereumAddress("0xbc6b677377598a79fa1885e02df1894b05bc8b33")!)!
+    func mintTokenUsingPaymaster(tokenAddress: String, paymasterAddress: String, callback: (() -> Void)) {
+        let contract = zkSync.web3.contract(Web3.Utils.IToken, at: EthereumAddress(tokenAddress)!)!
         
         let value = BigUInt(1_000)
         
@@ -50,9 +50,9 @@ class PaymasterManager: BaseManager {
         
         estimate.parameters.EIP712Meta?.gasPerPubdata = BigUInt(160000)
         
-        let paymasterAddress = EthereumAddress("0x49720d21525025522040f73da5b3992112bbec00")!
+        let paymasterAddress = EthereumAddress(paymasterAddress)!
         let paymasterInput = Paymaster.encodeApprovalBased(
-            EthereumAddress("0xbc6b677377598a79fa1885e02df1894b05bc8b33")!,
+            EthereumAddress(tokenAddress)!,
             minimalAllowance: BigUInt(1),
             paymasterInput: Data()
         )
