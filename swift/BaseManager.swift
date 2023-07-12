@@ -10,6 +10,7 @@ import CryptoKit
 import BigInt
 #if canImport(web3swift)
 import web3swift
+import Web3Core
 #else
 import web3swift_zksync2
 #endif
@@ -19,44 +20,47 @@ import zkSync2_swift
 
 class BaseManager {
     let credentials = Credentials(Config.privateKey)
-    
-    let zkSync: ZkSync = ZkSyncImpl(Config.zkSyncProviderUrl)
-    let ethereum: web3 = try! Web3.new(Config.ethereumProviderUrl)
-    
-    init() {
+
+    let zkSync: ZkSync
+    let ethereum: Web3
+
+    init() async {
+        zkSync = await ZkSyncImpl(Config.zkSyncProviderUrl)
+        ethereum = try! await Web3.new(Config.ethereumProviderUrl)
+        
         let keystoreManager = KeystoreManager([credentials])
         self.ethereum.addKeystoreManager(keystoreManager)
     }
-    
-    var chainId: BigUInt {
-        try! zkSync.web3.eth.getChainIdPromise().wait()
-    }
-    
-    var nonce: BigUInt {
-        try! zkSync.web3.eth.getTransactionCountPromise(
-            address: EthereumAddress(signer.address)!,
-            onBlock: ZkBlockParameterName.committed.rawValue
-        ).wait()
-    }
-    
-    var signer: EthSigner {
-        PrivateKeyEthSigner(credentials, chainId: chainId)
-    }
-    
-    var wallet: ZkSyncWallet {
-        ZkSyncWallet(zkSync, ethereum: ethereum, ethSigner: signer, feeToken: Token.ETH)
-    }
-    
-    var transactionReceiptProcessor: ZkSyncTransactionReceiptProcessor {
-        ZkSyncTransactionReceiptProcessor(zkSync: zkSync)
-    }
-    
-    func signTransaction(_ transaction: inout EthereumTransaction) {
-        let signature = signer.signTypedData(signer.domain, typedData: transaction).addHexPrefix()
-        
-        let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
-        transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
-        transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
-        transaction.envelope.v = BigUInt(unmarshalledSignature.v)
-    }
+
+//222    var chainId: BigUInt {
+//        try! zkSync.web3.eth.getChainIdPromise().wait()
+//    }
+//
+//    func getNonce() async -> BigUInt {
+//        try! await zkSync.web3.eth.getTransactionCount(
+//            for: EthereumAddress(signer.address)!,
+//            onBlock: .pending
+//        )
+//    }
+//
+//    var signer: EthSigner {
+//        PrivateKeyEthSigner(credentials, chainId: chainId)
+//    }
+//
+//    var wallet: ZkSyncWallet {
+//        ZkSyncWallet(zkSync, ethereum: ethereum, ethSigner: signer, feeToken: Token.ETH)
+//    }
+//
+//    var transactionReceiptProcessor: ZkSyncTransactionReceiptProcessor {
+//        ZkSyncTransactionReceiptProcessor(zkSync: zkSync)
+//    }
+//
+//    func signTransaction(_ transaction: inout CodableTransaction) {
+//        let signature = signer.signTypedData(signer.domain, typedData: transaction).addHexPrefix()
+//
+//        let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
+//        transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
+//        transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
+//        transaction.envelope.v = BigUInt(unmarshalledSignature.v)
+//    }
 }
