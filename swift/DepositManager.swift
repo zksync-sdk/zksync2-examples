@@ -17,54 +17,58 @@ import web3swift_zksync2
 import zkSync2_swift
 #endif
 
-//222class DepositManager: BaseManager {
-//    func deposit(callback: @escaping (() -> Void)) {
-//        zkSync.zksMainContract { result in
-//            DispatchQueue.global().async {
-//                switch result {
-//                case .success(let address):
-//                    let zkSyncContract = self.ethereum.contract(
-//                        Web3.Utils.IZkSync,
-//                        at: EthereumAddress(address)
-//                    )!
-//
-//                    let l1ERC20Bridge = self.zkSync.web3.contract(
-//                        Web3.Utils.IL1Bridge,
-//                        at: EthereumAddress(self.signer.address)
-//                    )!
-//
-//                    let defaultEthereumProvider = DefaultEthereumProvider(
-//                        self.ethereum,
-//                        l1ERC20Bridge: l1ERC20Bridge,
-//                        zkSyncContract: zkSyncContract,
-//                        gasProvider: DefaultGasProvider()
-//                    )
-//
-//                    let amount = BigUInt(1_000_000_000_000)
-//
-//                    _ = try! defaultEthereumProvider.deposit(
-//                        with: Token.ETH,
-//                        amount: amount,
-//                        operatorTips: BigUInt(0),
-//                        to: self.signer.address
-//                    ).wait()
-//
-//                    callback()
-//                case .failure(let error):
-//                    print("Error:", error)
-//                }
-//            }
-//        }
-//    }
-//
-//    func depositViaWallet(callback: @escaping (() -> Void)) {
-//        let amount = BigUInt(1_000_000_000_000)
-//
-//        _ = try! wallet.deposit(
-//            signer.address,
-//            amount: amount
-//        ).wait()
-//
-//        callback()
-//    }
-//}
+class DepositManager: BaseManager {
+    func deposit(callback: @escaping (() -> Void)) {
+        zkSync.zksMainContract { result in
+            DispatchQueue.global().async {
+                switch result {
+                case .success(let address):
+                    let zkSyncContract = self.ethereum.contract(
+                        Web3.Utils.IZkSync,
+                        at: EthereumAddress(address)
+                    )!
+
+                    let l1ERC20Bridge = self.zkSync.web3.contract(
+                        Web3.Utils.IL1Bridge,
+                        at: EthereumAddress(self.signer.address)
+                    )!
+
+                    let defaultEthereumProvider = DefaultEthereumProvider(
+                        self.ethereum,
+                        l1ERC20Bridge: l1ERC20Bridge,
+                        zkSyncContract: zkSyncContract,
+                        gasProvider: DefaultGasProvider()
+                    )
+
+                    let amount = BigUInt(1_000_000_000_000)
+
+                    Task {
+                        _ = try! await defaultEthereumProvider.deposit(
+                            with: Token.ETH,
+                            amount: amount,
+                            operatorTips: BigUInt(0),
+                            to: self.signer.address
+                        )
+                        
+                        callback()
+                    }
+                case .failure(let error):
+                    print("Error:", error)
+                }
+            }
+        }
+    }
+
+    func depositViaWallet(callback: @escaping (() -> Void)) {
+        Task {
+            let amount = BigUInt(1_000_000_000_000)
+            
+            _ = await wallet.deposit(
+                signer.address,
+                amount: amount
+            )
+            
+            callback()
+        }
+    }
+}

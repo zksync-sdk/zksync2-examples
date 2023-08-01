@@ -17,61 +17,55 @@ import web3swift_zksync2
 import zkSync2_swift
 #endif
 
-//222class TransferManager: BaseManager {
-//    func transfer(toAddress: String, value: BigUInt, callback: (() -> Void)) {
-//        var estimate = EthereumTransaction.createFunctionCallTransaction(
-//            from: EthereumAddress(signer.address)!,
-//            to: EthereumAddress(toAddress)!,
-//            gasPrice: BigUInt.zero,
-//            gasLimit: BigUInt.zero,
-//            data: Data()
-//        )
-//
-//        let fee = try! zkSync.zksEstimateFee(estimate).wait()
-//
-//        estimate.parameters.EIP712Meta?.gasPerPubdata = fee.gasPerPubdataLimit
-//
-//        var transactionOptions = TransactionOptions.defaultOptions
-//        transactionOptions.type = .eip712
-//        transactionOptions.from = EthereumAddress(signer.address)!
-//        transactionOptions.to = estimate.to
-//        transactionOptions.gasLimit = .manual(fee.gasLimit)
-//        transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerGas)
-//        transactionOptions.maxFeePerGas = .manual(fee.maxFeePerGas)
-//        transactionOptions.value = value
-//        transactionOptions.nonce = .manual(nonce)
-//        transactionOptions.chainID = chainId
-//
-//        var ethereumParameters = EthereumParameters(from: transactionOptions)
-//        ethereumParameters.EIP712Meta = estimate.parameters.EIP712Meta
-//
-//        var transaction = EthereumTransaction(
-//            type: .eip712,
-//            to: estimate.to,
-//            nonce: nonce,
-//            chainID: chainId,
-//            value: value,
-//            data: estimate.data,
-//            parameters: ethereumParameters
-//        )
-//
-//        signTransaction(&transaction)
-//
-//        let result = try! zkSync.web3.eth.sendRawTransactionPromise(transaction).wait()
-//
-//        let receipt = transactionReceiptProcessor.waitForTransactionReceipt(hash: result.hash)
-//
-//        assert(receipt?.status == .ok)
-//
-//        callback()
-//    }
-//
-//    func transferViaWallet(toAddress: String, value: BigUInt, callback: (() -> Void)) {
-//        _ = try! wallet.transfer(
-//            toAddress,
-//            amount: value
-//        ).wait()
-//
-//        callback()
-//    }
-//}
+class TransferManager: BaseManager {
+    func transfer(toAddress: String, value: BigUInt, callback: @escaping (() -> Void)) {
+        Task {
+            var estimate = CodableTransaction.createFunctionCallTransaction(
+                from: EthereumAddress(signer.address)!,
+                to: EthereumAddress(toAddress)!,
+                gasPrice: BigUInt.zero,
+                gasLimit: BigUInt.zero,
+                data: Data()
+            )
+
+            let fee = try! zkSync.zksEstimateFee(estimate).wait()
+
+            estimate.eip712Meta?.gasPerPubdata = fee.gasPerPubdataLimit
+
+            var transaction = await CodableTransaction(
+                type: .eip712,
+                to: estimate.to,
+                nonce: getNonce(),
+                chainID: signer.domain.chainId,
+                value: value,
+                data: estimate.data
+            )
+            transaction.from = EthereumAddress(signer.address)!
+            transaction.gasLimit = fee.gasLimit
+            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
+            transaction.maxFeePerGas = fee.maxFeePerGas
+            transaction.eip712Meta = estimate.eip712Meta
+
+            signTransaction(&transaction)
+
+            let result = try! await zkSync.web3.eth.send(transaction)
+            
+            let receipt = await transactionReceiptProcessor.waitForTransactionReceipt(hash: result.hash)
+            
+            assert(receipt?.status == .ok)
+            
+            callback()
+        }
+    }
+
+    func transferViaWallet(toAddress: String, value: BigUInt, callback: @escaping (() -> Void)) {
+        Task {
+            _ = await wallet.transfer(
+                toAddress,
+                amount: value
+            )
+            
+            callback()
+        }
+    }
+}
