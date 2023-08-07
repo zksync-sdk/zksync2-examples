@@ -6,7 +6,6 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/zksync-sdk/zksync2-go/accounts"
 	"github.com/zksync-sdk/zksync2-go/clients"
-	"github.com/zksync-sdk/zksync2-go/utils"
 	"log"
 	"math/big"
 	"os"
@@ -17,6 +16,7 @@ func main() {
 		PrivateKey        = os.Getenv("PRIVATE_KEY")
 		ZkSyncEraProvider = "https://testnet.era.zksync.dev"
 		EthereumProvider  = "https://rpc.ankr.com/eth_goerli"
+		TokenL2Address    = common.HexToAddress("0x1958F3a8246B526796DdE3F37fB2b9E04660Bf33")
 	)
 
 	// Connect to zkSync network
@@ -39,11 +39,11 @@ func main() {
 		log.Panic(err)
 	}
 
-	// Perform withdrawal
+	// Perform withdraw
 	tx, err := wallet.Withdraw(nil, accounts.WithdrawalTransaction{
 		To:     wallet.Address(),
-		Amount: big.NewInt(1_000_000_000),
-		Token:  utils.EthAddress,
+		Amount: big.NewInt(1),
+		Token:  TokenL2Address,
 	})
 	if err != nil {
 		log.Panic(err)

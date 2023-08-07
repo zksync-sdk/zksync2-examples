@@ -14,29 +14,19 @@ import (
 
 func main() {
 	var (
-		PrivateKey     = os.Getenv("PRIVATE_KEY")
-		ZkSyncProvider = "https://testnet.era.zksync.dev"
+		PrivateKey        = os.Getenv("PRIVATE_KEY")
+		ZkSyncEraProvider = "https://testnet.era.zksync.dev"
 	)
 
 	// Connect to zkSync network
-	zp, err := clients.NewDefaultProvider(ZkSyncProvider)
+	client, err := clients.Dial(ZkSyncEraProvider)
 	if err != nil {
 		log.Panic(err)
 	}
-	defer zp.Close()
-
-	// Create singer object from private key for appropriate chain
-	chainID, err := zp.ChainID(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
-	es, err := accounts.NewEthSignerFromRawPrivateKey(common.Hex2Bytes(PrivateKey), chainID.Int64())
-	if err != nil {
-		log.Fatal(err)
-	}
+	defer client.Close()
 
 	// Create wallet
-	w, err := accounts.NewWallet(es, zp)
+	wallet, err := accounts.NewWallet(common.Hex2Bytes(PrivateKey), &client, nil)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -54,34 +44,37 @@ func main() {
 	}
 
 	// Deploy smart contract
-	hash, err := w.Deploy(demoBytecode, nil, nil, [][]byte{fooBytecode}, nil)
+	hash, err := wallet.Deploy(nil, accounts.Create2Transaction{
+		Bytecode:     demoBytecode,
+		Dependencies: [][]byte{fooBytecode},
+	})
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Transaction: ", hash)
 
 	// Wait unit transaction is finalized
-	_, err = zp.WaitMined(context.Background(), hash)
+	_, err = client.WaitMined(context.Background(), hash)
 	if err != nil {
 		log.Panic(err)
 	}
 
 	// Get address of deployed smart contract
-	contractAddress, err := utils.ComputeL2Create2Address(
-		w.GetAddress(),
+	contractAddress, err := utils.Create2Address(
+		wallet.Address(),
 		demoBytecode,
 		nil,
 		nil,
 	)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	fmt.Println("Smart contract address: ", contractAddress.String())
 
 	// INTERACT WITH SMART CONTRACT
 
 	// Create instance of Demo contract
-	demoContract, err := demo.NewDemo(contractAddress, zp)
+	demoContract, err := demo.NewDemo(contractAddress, client)
 	if err != nil {
 		log.Panic(err)
 	}
