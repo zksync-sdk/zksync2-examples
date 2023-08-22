@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/zksync-sdk/zksync2-go/accounts"
 	"github.com/zksync-sdk/zksync2-go/clients"
 	"github.com/zksync-sdk/zksync2-go/utils"
@@ -18,29 +17,19 @@ import (
 
 func main() {
 	var (
-		PrivateKey     = os.Getenv("PRIVATE_KEY")
-		ZkSyncProvider = "https://testnet.era.zksync.dev"
+		PrivateKey        = os.Getenv("PRIVATE_KEY")
+		ZkSyncEraProvider = "https://testnet.era.zksync.dev"
 	)
 
 	// Connect to zkSync network
-	zp, err := clients.NewDefaultProvider(ZkSyncProvider)
+	client, err := clients.Dial(ZkSyncEraProvider)
 	if err != nil {
 		log.Panic(err)
 	}
-	defer zp.Close()
-
-	// Create singer object from private key for appropriate chain
-	chainID, err := zp.ChainID(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
-	es, err := accounts.NewEthSignerFromRawPrivateKey(common.Hex2Bytes(PrivateKey), chainID.Int64())
-	if err != nil {
-		log.Fatal(err)
-	}
+	defer client.Close()
 
 	// Create wallet
-	w, err := accounts.NewWallet(es, zp)
+	wallet, err := accounts.NewWallet(common.Hex2Bytes(PrivateKey), &client, nil)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -63,7 +52,7 @@ func main() {
 		log.Panicf("error while encoding constructor arguments: %s", err)
 	}
 
-	// Use salt if there is need to deploy same contract twice, otherwise remove salt
+	// Generate salt
 	salt := make([]byte, 32)
 	_, err = rand.Read(salt)
 	if err != nil {
@@ -71,23 +60,27 @@ func main() {
 	}
 
 	// Deploy smart contract
-	hash, err := w.Deploy(bytecode, constructor, salt, nil, nil)
+	hash, err := wallet.Deploy(nil, accounts.Create2Transaction{
+		Bytecode: bytecode,
+		Calldata: constructor,
+		Salt:     salt,
+	})
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 		// When contract is deployed twice without salt the following error occurs:
-		// panic: failed to EstimateGas712: failed to query eth_estimateGas: execution reverted: Code hash is non-zero
+		// panic: failed to EstimateGasL2: failed to query eth_estimateGas: execution reverted: Code hash is non-zero
 	}
 	fmt.Println("Transaction: ", hash)
 
 	// Wait unit transaction is finalized
-	_, err = zp.WaitMined(context.Background(), hash)
+	_, err = client.WaitMined(context.Background(), hash)
 	if err != nil {
 		log.Panic(err)
 	}
 
 	// Get address of deployed smart contract
-	contractAddress, err := utils.ComputeL2Create2Address(
-		w.GetAddress(),
+	contractAddress, err := utils.Create2Address(
+		wallet.Address(),
 		bytecode,
 		constructor,
 		salt,
@@ -100,7 +93,7 @@ func main() {
 	// INTERACT WITH SMART CONTRACT
 
 	// Create instance of Incrementer contract
-	incrementerContract, err := incrementer.NewIncrementer(contractAddress, zp)
+	incrementerContract, err := incrementer.NewIncrementer(contractAddress, client)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -112,14 +105,8 @@ func main() {
 	}
 	fmt.Println("Value before Increment method execution: ", value)
 
-	// Read the private key
-	privateKey, err := crypto.ToECDSA(common.Hex2Bytes(PrivateKey))
-	if err != nil {
-		log.Panic(err)
-	}
-
 	// Start configuring transaction parameters
-	opts, err := bind.NewKeyedTransactorWithChainID(privateKey, w.GetEthSigner().GetDomain().ChainId)
+	opts, err := bind.NewKeyedTransactorWithChainID(wallet.Signer().PrivateKey(), wallet.Signer().Domain().ChainId)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -130,7 +117,7 @@ func main() {
 		log.Panic(err)
 	}
 	// Wait for transaction to be finalized
-	_, err = zp.WaitMined(context.Background(), tx.Hash())
+	_, err = client.WaitMined(context.Background(), tx.Hash())
 	if err != nil {
 		log.Panic(err)
 	}
