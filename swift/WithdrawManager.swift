@@ -53,7 +53,7 @@ class WithdrawManager: BaseManager {
         
         estimate.envelope.parameters.chainID = signer.domain.chainId
         
-        let fee = try! zkSync.zksEstimateFee(estimate).wait()
+        let fee = try! zkSync.estimateFee(estimate).wait()
         
         estimate.parameters.EIP712Meta?.gasPerPubdata = BigUInt(160000)
         
@@ -100,16 +100,14 @@ class WithdrawManager: BaseManager {
             at: EthereumAddress(signer.address)
         )!
         
-        zkSync.zksMainContract { result in
+        zkSync.mainContract { result in
             DispatchQueue.global().async {
                 switch result {
                 case .success(let address):
-                    let zkSyncContract = self.ethereum.contract(
+                    let zkSyncContract = self.web.contract(
                         Web3.Utils.IZkSync,
                         at: EthereumAddress(address)
                     )!
-                    
-                    let defaultEthereumProvider = DefaultEthereumProvider(self.ethereum, l1ERC20Bridge: l1ERC20Bridge, zkSyncContract: zkSyncContract, gasProvider: DefaultGasProvider())
                     
                     let topic = "L1MessageSent(address,bytes32,bytes)"
                     let log = receipt.logs.filter({
@@ -126,7 +124,7 @@ class WithdrawManager: BaseManager {
                         return false
                     })[index]
                     
-                    self.zkSync.zksGetL2ToL1LogProof(txHash, logIndex: Int(l2tol1log.logIndex)) { result in
+                    self.zkSync.getL2ToL1LogProof(txHash, logIndex: Int(l2tol1log.logIndex)) { result in
                         DispatchQueue.global().async {
                             switch result {
                             case .success(let proof):
@@ -135,14 +133,14 @@ class WithdrawManager: BaseManager {
                                 let eventData = contract.parseEvent(log).eventData
                                 let message = eventData?["_message"] as? Data ?? Data()
                                 
-                                _ = try! defaultEthereumProvider.finalizeEthWithdrawal(
-                                    receipt.l1BatchNumber,
-                                    l2MessageIndex: BigUInt(proof.id),
-                                    l2TxNumberInBlock: receipt.l1BatchTxIndex,
-                                    message: message,
-                                    proof: proof.proof.compactMap({ Data(fromHex: $0) }),
-                                    nonce: self.nonce
-                                ).wait()
+//111                                _ = try! defaultEthereumProvider.finalizeEthWithdrawal(
+//                                    receipt.l1BatchNumber,
+//                                    l2MessageIndex: BigUInt(proof.id),
+//                                    l2TxNumberInBlock: receipt.l1BatchTxIndex,
+//                                    message: message,
+//                                    proof: proof.proof.compactMap({ Data(fromHex: $0) }),
+//                                    nonce: self.nonce
+//                                ).wait()
                                 
                                 callback()
                             case .failure(let error):
@@ -160,7 +158,7 @@ class WithdrawManager: BaseManager {
     func withdrawViaWallet(callback: @escaping (() -> Void)) {
         let amount = BigUInt(1_000_000_000_000)
         
-        _ = try! wallet.withdraw(
+        _ = try! walletL2.withdraw(
             signer.address,
             amount: amount,
             token: Token.ETH

@@ -26,7 +26,7 @@ class TransferManager: BaseManager {
             data: Data()
         )
         
-        let fee = try! zkSync.zksEstimateFee(estimate).wait()
+        let fee = try! zkSync.estimateFee(estimate).wait()
         
         estimate.parameters.EIP712Meta?.gasPerPubdata = fee.gasPerPubdataLimit
         
@@ -66,7 +66,7 @@ class TransferManager: BaseManager {
     }
     
     func transferViaWallet(toAddress: String, value: BigUInt, callback: (() -> Void)) {
-        _ = try! wallet.transfer(
+        _ = try! walletL2.transfer(
             toAddress,
             amount: value
         ).wait()

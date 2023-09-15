@@ -51,7 +51,7 @@ class SmartContractManager: BaseManager {
         
         estimate.parameters.EIP712Meta?.factoryDeps = [bytecodeData]
         
-        let fee = try! zkSync.zksEstimateFee(estimate).wait()
+        let fee = try! zkSync.estimateFee(estimate).wait()
         
         var transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .eip712
@@ -96,7 +96,7 @@ class SmartContractManager: BaseManager {
     func deploySmartContractViaWallet(callback: (() -> Void)) {
         let url = Bundle.main.url(forResource: "Storage", withExtension: "zbin")!
         let bytecodeData = try! Data(contentsOf: url)
-        let result = try! wallet.deploy(bytecodeData).wait()
+        let result = try! deployer.deploy(bytecodeData, calldata: nil, nonce: nil).wait()
         
         let receipt = transactionReceiptProcessor.waitForTransactionReceipt(hash: result.hash)
         
@@ -124,7 +124,7 @@ class SmartContractManager: BaseManager {
             parameters: parameters,
             transactionOptions: transactionOptions
         ) else {
-            fatalError(DefaultEthereumProvider.EthereumProviderError.invalidParameter.localizedDescription)
+            fatalError(EthereumProviderError.invalidParameter.localizedDescription)
         }
         
         var estimate = EthereumTransaction.createFunctionCallTransaction(
@@ -135,7 +135,7 @@ class SmartContractManager: BaseManager {
             data: writeTransaction.transaction.data
         )
         
-        let fee = try! zkSync.zksEstimateFee(estimate).wait()
+        let fee = try! zkSync.estimateFee(estimate).wait()
         
         estimate.parameters.EIP712Meta?.gasPerPubdata = BigUInt(160000)
         
@@ -174,7 +174,7 @@ class SmartContractManager: BaseManager {
             parameters: parameters,
             transactionOptions: nil
         ) else {
-            fatalError(DefaultEthereumProvider.EthereumProviderError.invalidParameter.localizedDescription)
+            fatalError(EthereumProviderError.invalidParameter.localizedDescription)
         }
         
         let result = try! readTransaction.callPromise().wait()

@@ -20,12 +20,13 @@ import zkSync2_swift
 class BaseManager {
     let credentials = Credentials(Config.privateKey)
     
-    let zkSync: ZkSync = ZkSyncImpl(Config.zkSyncProviderUrl)
-    let ethereum: web3 = try! Web3.new(Config.ethereumProviderUrl)
+    let zkSync: ZkSyncClient = ZkSyncClientImpl(Config.zkSyncProviderUrl)
+    let ethClient: EthereumClient = EthereumClientImpl(Config.ethereumProviderUrl)
+    let web: web3 = try! Web3.new(Config.ethereumProviderUrl)
     
     init() {
         let keystoreManager = KeystoreManager([credentials])
-        self.ethereum.addKeystoreManager(keystoreManager)
+        self.web.addKeystoreManager(keystoreManager)
     }
     
     var chainId: BigUInt {
@@ -39,12 +40,20 @@ class BaseManager {
         ).wait()
     }
     
-    var signer: EthSigner {
-        PrivateKeyEthSigner(credentials, chainId: chainId)
+    var signer: ETHSigner {
+        EthSignerImpl(credentials, chainId: chainId)
     }
     
-    var wallet: ZkSyncWallet {
-        ZkSyncWallet(zkSync, ethereum: ethereum, ethSigner: signer, feeToken: Token.ETH)
+    var deployer: DeployerImpl {
+        DeployerImpl(zkSync, web3: web, ethSigner: signer)
+    }
+    
+    var walletL1: WalletL1 {
+        WalletL1(zkSync, ethClient: ethClient, web3: web, ethSigner: signer)
+    }
+    
+    var walletL2: WalletL2 {
+        WalletL2(zkSync, ethClient: ethClient, web3: web, ethSigner: signer)
     }
     
     var transactionReceiptProcessor: ZkSyncTransactionReceiptProcessor {

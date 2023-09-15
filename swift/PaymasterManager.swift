@@ -46,7 +46,7 @@ class PaymasterManager: BaseManager {
             data: writeTransaction.transaction.data
         )
         
-        let fee = try! zkSync.zksEstimateFee(estimate).wait()
+        let fee = try! zkSync.estimateFee(estimate).wait()
         
         estimate.parameters.EIP712Meta?.gasPerPubdata = BigUInt(160000)
         

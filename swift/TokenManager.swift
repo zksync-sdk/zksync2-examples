@@ -67,7 +67,7 @@ class TokenManager: BaseManager {
         
         estimate.parameters.EIP712Meta?.factoryDeps = [bytecodeData]
         
-        let fee = try! zkSync.zksEstimateFee(estimate).wait()
+        let fee = try! zkSync.estimateFee(estimate).wait()
         
         var transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .eip712
@@ -137,7 +137,7 @@ class TokenManager: BaseManager {
             data: writeTransaction.transaction.data
         )
         
-        let fee = try! zkSync.zksEstimateFee(estimate).wait()
+        let fee = try! zkSync.estimateFee(estimate).wait()
         
         estimate.parameters.EIP712Meta?.gasPerPubdata = BigUInt(160000)
         
@@ -173,7 +173,7 @@ class TokenManager: BaseManager {
     }
     
     func getAllTokens(callback: @escaping (() -> Void)) {
-        zkSync.zksGetConfirmedTokens(0, limit: 255) { result in
+        zkSync.confirmedTokens(0, limit: 255) { result in
             print("tokens:", result)
             
             callback()
@@ -181,7 +181,7 @@ class TokenManager: BaseManager {
     }
     
     func tokenBalance(tokenAddress: String, callback: (() -> Void)) {
-        let balance = try! wallet.getBalance(Token(l1Address: "", l2Address: tokenAddress, symbol: "", decimals: 18)).wait()
+        let balance = try! walletL2.getBalance(Token(l1Address: "", l2Address: tokenAddress, symbol: "", decimals: 18)).wait()
         
         print("balance:", balance)
         
