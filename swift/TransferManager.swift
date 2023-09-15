@@ -28,12 +28,12 @@ class TransferManager: BaseManager {
                 data: Data()
             )
 
-            //444let fee = try! zkSync.estimateFee(estimate).wait()
+            let fee = try! await zkSync.estimateFee(estimate)
 
             //444estimate.eip712Meta?.gasPerPubdata = fee.gasPerPubdataLimit
 
             var transaction = await CodableTransaction(
-                //444type: .eip712,
+                type: .eip712,
                 to: estimate.to,
                 nonce: self.getNonce(),
                 chainID: self.signer.domain.chainId,
@@ -41,10 +41,10 @@ class TransferManager: BaseManager {
                 data: estimate.data
             )
             transaction.from = EthereumAddress(signer.address)!
-//444            transaction.gasLimit = fee.gasLimit
-//            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
-//            transaction.maxFeePerGas = fee.maxFeePerGas
-            //444transaction.eip712Meta = estimate.eip712Meta
+            transaction.gasLimit = fee.gasLimit
+            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
+            transaction.maxFeePerGas = fee.maxFeePerGas
+            transaction.eip712Meta = estimate.eip712Meta
 
             signTransaction(&transaction)
 

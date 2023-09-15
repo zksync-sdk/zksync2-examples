@@ -60,7 +60,7 @@ class WithdrawManager: BaseManager {
 //            //444estimate.eip712Meta?.gasPerPubdata = BigUInt(160000)
 //
 //            var transaction = await CodableTransaction(
-//                //444type: .eip712,
+//                type: .eip712,
 //                to: estimate.to,
 //                nonce: self.getNonce(),
 //                chainID: self.signer.domain.chainId,

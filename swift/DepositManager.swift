@@ -22,11 +22,11 @@ class DepositManager: BaseManager {
         Task {
             let amount = BigUInt(1_000_000_000_000)
             
-//444            _ = try! walletL1.deposit(
-//                signer.address,
-//                amount: amount,
-//                token: Token.ETH
-//            )
+            _ = try! await walletL1.deposit(
+                signer.address,
+                amount: amount,
+                token: Token.ETH
+            )
             
             callback()
         }

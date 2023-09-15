@@ -70,7 +70,7 @@ class SmartAccountManager: BaseManager {
             let estimateGas = try! await zkSync.web3.eth.estimateGas(for: estimate)
             
             var transaction = await CodableTransaction(
-                //444type: .eip712,
+                type: .eip712,
                 to: estimate.to,
                 nonce: self.getNonce(),
                 chainID: self.signer.domain.chainId,
@@ -82,8 +82,8 @@ class SmartAccountManager: BaseManager {
             transaction.maxFeePerGas = gasPrice
             transaction.gasLimit = estimateGas
             transaction.from = estimate.from
-            //444transaction.eip712Meta = estimate.eip712Meta
-            //444transaction.eip712Meta?.factoryDeps = [bytecodeData]
+            transaction.eip712Meta = estimate.eip712Meta
+            transaction.eip712Meta?.factoryDeps = [bytecodeData]
             
             signTransaction(&transaction)
             

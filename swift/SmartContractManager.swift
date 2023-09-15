@@ -53,22 +53,22 @@ class SmartContractManager: BaseManager {
             
             //444estimate.eip712Meta?.factoryDeps = [bytecodeData]
             
-            //444let fee = try! zkSync.estimateFee(estimate).wait()
+            let fee = try! await zkSync.estimateFee(estimate)
             
             var transaction = await CodableTransaction(
-                //444type: .eip712,
+                type: .eip712,
                 to: estimate.to,
                 nonce: self.getNonce(),
                 chainID: self.signer.domain.chainId,
                 data: estimate.data
             )
             transaction.value = contractTransaction.value
-//444            transaction.gasLimit = fee.gasLimit
-//            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
-//            transaction.maxFeePerGas = fee.maxFeePerGas
+            transaction.gasLimit = fee.gasLimit
+            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
+            transaction.maxFeePerGas = fee.maxFeePerGas
             transaction.from = contractTransaction.from
-            //444transaction.eip712Meta = estimate.eip712Meta
-            //444transaction.eip712Meta?.factoryDeps = [bytecodeData]
+            transaction.eip712Meta = estimate.eip712Meta
+            transaction.eip712Meta?.factoryDeps = [bytecodeData]
             
             signTransaction(&transaction)
             
@@ -129,22 +129,22 @@ class SmartContractManager: BaseManager {
                 data: writeTransaction.transaction.data
             )
             
-            //444let fee = try! zkSync.estimateFee(estimate).wait()
+            let fee = try! await zkSync.estimateFee(estimate)
             
             //444estimate.eip712Meta?.gasPerPubdata = BigUInt(160000)
             
             var transaction = await CodableTransaction(
-                //444type: .eip712,
+                type: .eip712,
                 to: estimate.to,
                 nonce: self.getNonce(),
                 chainID: self.signer.domain.chainId,
                 data: estimate.data
             )
-            //444transaction.eip712Meta = estimate.eip712Meta
+            transaction.eip712Meta = estimate.eip712Meta
             transaction.from = EthereumAddress(signer.address)!
-//444            transaction.gasLimit = fee.gasLimit
-//            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
-//            transaction.maxFeePerGas = fee.maxFeePerGas
+            transaction.gasLimit = fee.gasLimit
+            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
+            transaction.maxFeePerGas = fee.maxFeePerGas
             
             signTransaction(&transaction)
             

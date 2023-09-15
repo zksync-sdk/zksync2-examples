@@ -67,24 +67,24 @@ class TokenManager: BaseManager {
             
             var estimate = CodableTransaction.createFunctionCallTransaction(from: EthereumAddress(self.signer.address)!, to: contractTransaction.to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: contractTransaction.data)
             
-            //444estimate.eip712Meta?.factoryDeps = [bytecodeData]
+            estimate.eip712Meta?.factoryDeps = [bytecodeData]
             
-            //444let fee = try! self.zkSync.estimateFee(estimate).wait()
+            let fee = try! await self.zkSync.estimateFee(estimate)
             
             var transaction = await CodableTransaction(
-                //444type: .eip712,
+                type: .eip712,
                 to: estimate.to,
                 nonce: self.getNonce(),
                 chainID: self.signer.domain.chainId,
                 data: estimate.data
             )
             transaction.value = contractTransaction.value
-//444            transaction.gasLimit = fee.gasLimit
-//            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
-//            transaction.maxFeePerGas = fee.maxFeePerGas
+            transaction.gasLimit = fee.gasLimit
+            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
+            transaction.maxFeePerGas = fee.maxFeePerGas
             transaction.from = contractTransaction.from
-            //444transaction.eip712Meta = estimate.eip712Meta
-            //444transaction.eip712Meta?.factoryDeps = [bytecodeData]
+            transaction.eip712Meta = estimate.eip712Meta
+            transaction.eip712Meta?.factoryDeps = [bytecodeData]
             
             signTransaction(&transaction)
             
@@ -129,14 +129,14 @@ class TokenManager: BaseManager {
                 data: writeTransaction.transaction.data
             )
             
-            //444let fee = try! zkSync.estimateFee(estimate).wait()
+            let fee = try! await zkSync.estimateFee(estimate)
             
-            //444estimate.eip712Meta?.gasPerPubdata = BigUInt(160000)
+            estimate.eip712Meta?.gasPerPubdata = BigUInt(160000)
             
             let estimateGas = try! await self.zkSync.web3.eth.estimateGas(for: estimate)
             
             var transaction = await CodableTransaction(
-                //444type: .eip712,
+                type: .eip712,
                 to: estimate.to,
                 nonce: self.getNonce(),
                 chainID: self.signer.domain.chainId,
@@ -145,9 +145,9 @@ class TokenManager: BaseManager {
             transaction.gasLimit = estimateGas
             transaction.from = EthereumAddress(self.signer.address)!
             transaction.to = estimate.to
-//444            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
-//            transaction.maxFeePerGas = fee.maxFeePerGas
-            //444transaction.eip712Meta = estimate.eip712Meta
+            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
+            transaction.maxFeePerGas = fee.maxFeePerGas
+            transaction.eip712Meta = estimate.eip712Meta
             
             signTransaction(&transaction)
             
@@ -167,7 +167,7 @@ class TokenManager: BaseManager {
 
     func tokenBalance(tokenAddress: String, callback: @escaping (() -> Void)) {
         Task {
-            let balance = walletL2.getBalance(Token(l1Address: "", l2Address: tokenAddress, symbol: "", decimals: 18))
+            let balance = try! await walletL2.getBalance(Token(l1Address: "", l2Address: tokenAddress, symbol: "", decimals: 18))
             
             print("balance:", balance)
             
