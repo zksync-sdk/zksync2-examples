@@ -1,20 +1,25 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/zksync-sdk/zksync2-go/clients"
 	"log"
 )
 
 func main() {
-	zp, err := clients.NewDefaultProvider("https://testnet.era.zksync.dev")
+	var (
+		ZkSyncEraProvider = "https://testnet.era.zksync.dev"
+	)
+
+	client, err := clients.Dial(ZkSyncEraProvider)
 	if err != nil {
 		log.Panic(err)
 	}
-	defer zp.Close()
+	defer client.Close()
 
 	// get first 255 tokens
-	tokens, err := zp.ZksGetConfirmedTokens(0, 255)
+	tokens, err := client.ConfirmedTokens(context.Background(), 0, 255)
 	if err != nil {
 		log.Panic(err)
 	}

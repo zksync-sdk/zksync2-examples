@@ -51,24 +51,24 @@ class SmartContractManager: BaseManager {
                 data: contractTransaction.data
             )
             
-            estimate.eip712Meta?.factoryDeps = [bytecodeData]
+            //444estimate.eip712Meta?.factoryDeps = [bytecodeData]
             
-            let fee = try! zkSync.zksEstimateFee(estimate).wait()
+            //444let fee = try! zkSync.estimateFee(estimate).wait()
             
             var transaction = await CodableTransaction(
-                type: .eip712,
+                //444type: .eip712,
                 to: estimate.to,
                 nonce: self.getNonce(),
                 chainID: self.signer.domain.chainId,
                 data: estimate.data
             )
             transaction.value = contractTransaction.value
-            transaction.gasLimit = fee.gasLimit
-            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
-            transaction.maxFeePerGas = fee.maxFeePerGas
+//444            transaction.gasLimit = fee.gasLimit
+//            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
+//            transaction.maxFeePerGas = fee.maxFeePerGas
             transaction.from = contractTransaction.from
-            transaction.eip712Meta = estimate.eip712Meta
-            transaction.eip712Meta?.factoryDeps = [bytecodeData]
+            //444transaction.eip712Meta = estimate.eip712Meta
+            //444transaction.eip712Meta?.factoryDeps = [bytecodeData]
             
             signTransaction(&transaction)
             
@@ -91,11 +91,11 @@ class SmartContractManager: BaseManager {
         let url = Bundle.main.url(forResource: "Storage", withExtension: "zbin")!
         let bytecodeData = try! Data(contentsOf: url)
         Task {
-            let result = await wallet.deploy(bytecodeData)
+            let result = await deployer.deploy(bytecodeData, calldata: nil, nonce: nil)
             
-            let receipt = await transactionReceiptProcessor.waitForTransactionReceipt(hash: result.hash)
-            
-            assert(receipt?.status == .ok)
+//444            let receipt = await transactionReceiptProcessor.waitForTransactionReceipt(hash: result.hash)
+//
+//            assert(receipt?.status == .ok)
             
             callback()
         }
@@ -117,7 +117,7 @@ class SmartContractManager: BaseManager {
                 "set",
                 parameters: parameters
             ) else {
-                fatalError(DefaultEthereumProvider.EthereumProviderError.invalidParameter.localizedDescription)
+                fatalError(EthereumProviderError.invalidParameter.localizedDescription)
             }
             writeTransaction.transaction.from = EthereumAddress(signer.address)!
             
@@ -129,22 +129,22 @@ class SmartContractManager: BaseManager {
                 data: writeTransaction.transaction.data
             )
             
-            let fee = try! zkSync.zksEstimateFee(estimate).wait()
+            //444let fee = try! zkSync.estimateFee(estimate).wait()
             
-            estimate.eip712Meta?.gasPerPubdata = BigUInt(160000)
+            //444estimate.eip712Meta?.gasPerPubdata = BigUInt(160000)
             
             var transaction = await CodableTransaction(
-                type: .eip712,
+                //444type: .eip712,
                 to: estimate.to,
                 nonce: self.getNonce(),
                 chainID: self.signer.domain.chainId,
                 data: estimate.data
             )
-            transaction.eip712Meta = estimate.eip712Meta
+            //444transaction.eip712Meta = estimate.eip712Meta
             transaction.from = EthereumAddress(signer.address)!
-            transaction.gasLimit = fee.gasLimit
-            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
-            transaction.maxFeePerGas = fee.maxFeePerGas
+//444            transaction.gasLimit = fee.gasLimit
+//            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
+//            transaction.maxFeePerGas = fee.maxFeePerGas
             
             signTransaction(&transaction)
             
@@ -158,7 +158,7 @@ class SmartContractManager: BaseManager {
                 "get",
                 parameters: parameters
             ) else {
-                fatalError(DefaultEthereumProvider.EthereumProviderError.invalidParameter.localizedDescription)
+                fatalError(EthereumProviderError.invalidParameter.localizedDescription)
             }
             
             let result = try! await readTransaction.callContractMethod()

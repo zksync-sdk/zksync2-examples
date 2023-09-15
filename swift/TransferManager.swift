@@ -21,30 +21,30 @@ class TransferManager: BaseManager {
     func transfer(toAddress: String, value: BigUInt, callback: @escaping (() -> Void)) {
         Task {
             var estimate = CodableTransaction.createFunctionCallTransaction(
-                from: EthereumAddress(signer.address)!,
+                from: EthereumAddress(self.signer.address)!,
                 to: EthereumAddress(toAddress)!,
                 gasPrice: BigUInt.zero,
                 gasLimit: BigUInt.zero,
                 data: Data()
             )
 
-            let fee = try! zkSync.zksEstimateFee(estimate).wait()
+            //444let fee = try! zkSync.estimateFee(estimate).wait()
 
-            estimate.eip712Meta?.gasPerPubdata = fee.gasPerPubdataLimit
+            //444estimate.eip712Meta?.gasPerPubdata = fee.gasPerPubdataLimit
 
             var transaction = await CodableTransaction(
-                type: .eip712,
+                //444type: .eip712,
                 to: estimate.to,
-                nonce: getNonce(),
-                chainID: signer.domain.chainId,
+                nonce: self.getNonce(),
+                chainID: self.signer.domain.chainId,
                 value: value,
                 data: estimate.data
             )
             transaction.from = EthereumAddress(signer.address)!
-            transaction.gasLimit = fee.gasLimit
-            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
-            transaction.maxFeePerGas = fee.maxFeePerGas
-            transaction.eip712Meta = estimate.eip712Meta
+//444            transaction.gasLimit = fee.gasLimit
+//            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
+//            transaction.maxFeePerGas = fee.maxFeePerGas
+            //444transaction.eip712Meta = estimate.eip712Meta
 
             signTransaction(&transaction)
 
@@ -60,7 +60,7 @@ class TransferManager: BaseManager {
 
     func transferViaWallet(toAddress: String, value: BigUInt, callback: @escaping (() -> Void)) {
         Task {
-            _ = await wallet.transfer(
+            _ = await walletL2.transfer(
                 toAddress,
                 amount: value
             )

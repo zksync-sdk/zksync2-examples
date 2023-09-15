@@ -55,7 +55,7 @@ class SmartAccountManager: BaseManager {
             }
             
             let estimate = CodableTransaction.create2AccountTransaction(
-                from: EthereumAddress(signer.address)!,
+                from: EthereumAddress(self.signer.address)!,
                 gasPrice: BigUInt.zero,
                 gasLimit: BigUInt.zero,
                 bytecode: bytecodeData,
@@ -70,7 +70,7 @@ class SmartAccountManager: BaseManager {
             let estimateGas = try! await zkSync.web3.eth.estimateGas(for: estimate)
             
             var transaction = await CodableTransaction(
-                type: .eip712,
+                //444type: .eip712,
                 to: estimate.to,
                 nonce: self.getNonce(),
                 chainID: self.signer.domain.chainId,
@@ -82,8 +82,8 @@ class SmartAccountManager: BaseManager {
             transaction.maxFeePerGas = gasPrice
             transaction.gasLimit = estimateGas
             transaction.from = estimate.from
-            transaction.eip712Meta = estimate.eip712Meta
-            transaction.eip712Meta?.factoryDeps = [bytecodeData]
+            //444transaction.eip712Meta = estimate.eip712Meta
+            //444transaction.eip712Meta?.factoryDeps = [bytecodeData]
             
             signTransaction(&transaction)
             

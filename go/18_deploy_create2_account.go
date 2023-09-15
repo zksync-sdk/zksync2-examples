@@ -13,30 +13,20 @@ import (
 
 func main() {
 	var (
-		PrivateKey     = os.Getenv("PRIVATE_KEY")
-		ZkSyncProvider = "https://testnet.era.zksync.dev"
-		TokenAddress   = "Cd9BDa1d0FC539043D4C80103bdF4f9cb108931B" // Crown token which can be minted for free
+		PrivateKey        = os.Getenv("PRIVATE_KEY")
+		ZkSyncEraProvider = "https://testnet.era.zksync.dev"
+		TokenAddress      = "0xCd9BDa1d0FC539043D4C80103bdF4f9cb108931B" // Crown token which can be minted for free
 	)
 
 	// Connect to zkSync network
-	zp, err := clients.NewDefaultProvider(ZkSyncProvider)
+	client, err := clients.Dial(ZkSyncEraProvider)
 	if err != nil {
 		log.Panic(err)
 	}
-	defer zp.Close()
-
-	// Create singer object from private key for appropriate chain
-	chainID, err := zp.ChainID(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
-	es, err := accounts.NewEthSignerFromRawPrivateKey(common.Hex2Bytes(PrivateKey), chainID.Int64())
-	if err != nil {
-		log.Fatal(err)
-	}
+	defer client.Close()
 
 	// Create wallet
-	w, err := accounts.NewWallet(es, zp)
+	wallet, err := accounts.NewWallet(common.Hex2Bytes(PrivateKey), &client, nil)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -54,30 +44,22 @@ func main() {
 	}
 
 	// Deploy paymaster contract
-	hash, err := w.DeployAccount(bytecode, constructor, nil, nil)
-	if err != nil {
-		log.Panic(err)
-	}
+	hash, err := wallet.DeployAccount(nil, accounts.Create2Transaction{Bytecode: bytecode, Calldata: constructor})
 	if err != nil {
 		log.Panic(err)
 	}
 	fmt.Println("Transaction: ", hash)
 
 	// Wait unit transaction is finalized
-	_, err = zp.WaitMined(context.Background(), hash)
+	_, err = client.WaitMined(context.Background(), hash)
 	if err != nil {
 		log.Panic(err)
 	}
 
 	// Get address of deployed smart contract
-	contractAddress, err := utils.ComputeL2Create2Address(
-		w.GetAddress(),
-		bytecode,
-		constructor,
-		nil,
-	)
+	contractAddress, err := utils.Create2Address(wallet.Address(), bytecode, constructor, nil)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
-	fmt.Println("Paymaster address", contractAddress.String())
+	fmt.Println("Paymaster address: ", contractAddress.String())
 }

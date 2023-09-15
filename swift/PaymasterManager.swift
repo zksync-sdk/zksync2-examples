@@ -46,9 +46,9 @@ class PaymasterManager: BaseManager {
                 data: writeTransaction.transaction.data
             )
             
-            let fee = try! zkSync.zksEstimateFee(estimate).wait()
+            //444let fee = try! self.zkSync.estimateFee(estimate).wait()
             
-            estimate.eip712Meta?.gasPerPubdata = BigUInt(160000)
+            //444estimate.eip712Meta?.gasPerPubdata = BigUInt(160000)
             
             let paymasterAddress = EthereumAddress(paymasterAddress)!
             let paymasterInput = Paymaster.encodeApprovalBased(
@@ -57,12 +57,12 @@ class PaymasterManager: BaseManager {
                 paymasterInput: Data()
             )
             
-            estimate.eip712Meta?.paymasterParams = PaymasterParams(paymaster: paymasterAddress, paymasterInput: paymasterInput)
+            //444estimate.eip712Meta?.paymasterParams = PaymasterParams(paymaster: paymasterAddress, paymasterInput: paymasterInput)
             
             let estimateGas = try! await self.zkSync.web3.eth.estimateGas(for: estimate)
             
             var transaction = await CodableTransaction(
-                type: .eip712,
+                //444type: .eip712,
                 to: estimate.to,
                 nonce: self.getNonce(),
                 chainID: self.signer.domain.chainId,
@@ -70,9 +70,9 @@ class PaymasterManager: BaseManager {
             )
             transaction.from = EthereumAddress(signer.address)!
             transaction.gasLimit = estimateGas
-            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
-            transaction.maxFeePerGas = fee.maxFeePerGas
-            transaction.eip712Meta = estimate.eip712Meta
+//444            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
+//            transaction.maxFeePerGas = fee.maxFeePerGas
+            //444transaction.eip712Meta = estimate.eip712Meta
             
             signTransaction(&transaction)
             

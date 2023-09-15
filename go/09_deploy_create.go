@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/zksync-sdk/zksync2-go/accounts"
 	"github.com/zksync-sdk/zksync2-go/clients"
 	"log"
@@ -16,29 +15,19 @@ import (
 
 func main() {
 	var (
-		PrivateKey     = os.Getenv("PRIVATE_KEY")
-		ZkSyncProvider = "https://testnet.era.zksync.dev"
+		PrivateKey        = os.Getenv("PRIVATE_KEY")
+		ZkSyncEraProvider = "https://testnet.era.zksync.dev"
 	)
 
 	// Connect to zkSync network
-	zp, err := clients.NewDefaultProvider(ZkSyncProvider)
+	client, err := clients.Dial(ZkSyncEraProvider)
 	if err != nil {
 		log.Panic(err)
 	}
-	defer zp.Close()
-
-	// Create singer object from private key for appropriate chain
-	chainID, err := zp.ChainID(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
-	es, err := accounts.NewEthSignerFromRawPrivateKey(common.Hex2Bytes(PrivateKey), chainID.Int64())
-	if err != nil {
-		log.Fatal(err)
-	}
+	defer client.Close()
 
 	// Create wallet
-	w, err := accounts.NewWallet(es, zp)
+	wallet, err := accounts.NewWallet(common.Hex2Bytes(PrivateKey), &client, nil)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -50,33 +39,33 @@ func main() {
 	}
 
 	//Deploy smart contract
-	hash, err := w.DeployWithCreate(bytecode, nil, nil, nil)
+	hash, err := wallet.DeployWithCreate(nil, accounts.CreateTransaction{Bytecode: bytecode})
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Transaction: ", hash)
 
 	// Wait unit transaction is finalized
-	_, err = zp.WaitMined(context.Background(), hash)
+	_, err = client.WaitMined(context.Background(), hash)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	receipt, err := zp.GetTransactionReceipt(hash)
+	receipt, err := client.TransactionReceipt(context.Background(), hash)
 	if err != nil {
 		log.Panic(err)
 	}
 	contractAddress := receipt.ContractAddress
 
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	fmt.Println("Smart contract address", contractAddress.String())
 
 	// INTERACT WITH SMART CONTRACT
 
 	// Create instance of Storage smart contract
-	storageContract, err := storage.NewStorage(contractAddress, zp)
+	storageContract, err := storage.NewStorage(contractAddress, client)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -88,14 +77,8 @@ func main() {
 	}
 	fmt.Println("Value:", value)
 
-	// Read the private key
-	privateKey, err := crypto.ToECDSA(common.Hex2Bytes(PrivateKey))
-	if err != nil {
-		log.Panic(err)
-	}
-
 	// Start configuring transaction parameters
-	opts, err := bind.NewKeyedTransactorWithChainID(privateKey, w.GetEthSigner().GetDomain().ChainId)
+	opts, err := bind.NewKeyedTransactorWithChainID(wallet.Signer().PrivateKey(), wallet.Signer().Domain().ChainId)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -106,7 +89,7 @@ func main() {
 		log.Panic(err)
 	}
 	// Wait for transaction to be finalized
-	_, err = zp.WaitMined(context.Background(), tx.Hash())
+	_, err = client.WaitMined(context.Background(), tx.Hash())
 	if err != nil {
 		log.Panic(err)
 	}
@@ -116,9 +99,9 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	fmt.Println("Value after Set method execution: ", value)
+	fmt.Println("Value after first Set method execution: ", value)
 
-	// INTERACT WITH SMART CONTRACT USING EIP712 TRANSACTIONS
+	// INTERACT WITH SMART CONTRACT USING EIP-712 TRANSACTIONS
 	abi, err := storage.StorageMetaData.GetAbi()
 	if err != nil {
 		log.Panic(err)
@@ -129,13 +112,23 @@ func main() {
 		log.Panic(err)
 	}
 	// Execute set function
-	execute, err := w.Execute(contractAddress, setArguments, nil, nil)
+	execute, err := wallet.SendTransaction(context.Background(), &accounts.Transaction{
+		To:   &contractAddress,
+		Data: setArguments,
+	})
 	if err != nil {
 		log.Panic(err)
 	}
 
-	_, err = zp.WaitMined(context.Background(), execute)
+	_, err = client.WaitMined(context.Background(), execute)
 	if err != nil {
 		log.Panic(err)
 	}
+
+	// Execute Get method again to check if state is changed
+	value, err = storageContract.Get(nil)
+	if err != nil {
+		log.Panic(err)
+	}
+	fmt.Println("Value after second Set method execution: ", value)
 }
