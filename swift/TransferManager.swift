@@ -30,7 +30,7 @@ class TransferManager: BaseManager {
 
             let fee = try! await zkSync.estimateFee(estimate)
 
-            //444estimate.eip712Meta?.gasPerPubdata = fee.gasPerPubdataLimit
+            estimate.eip712Meta?.gasPerPubdata = fee.gasPerPubdataLimit
 
             var transaction = await CodableTransaction(
                 type: .eip712,

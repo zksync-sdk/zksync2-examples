@@ -51,7 +51,7 @@ class SmartContractManager: BaseManager {
                 data: contractTransaction.data
             )
             
-            //444estimate.eip712Meta?.factoryDeps = [bytecodeData]
+            estimate.eip712Meta?.factoryDeps = [bytecodeData]
             
             let fee = try! await zkSync.estimateFee(estimate)
             
@@ -93,9 +93,9 @@ class SmartContractManager: BaseManager {
         Task {
             let result = await deployer.deploy(bytecodeData, calldata: nil, nonce: nil)
             
-//444            let receipt = await transactionReceiptProcessor.waitForTransactionReceipt(hash: result.hash)
-//
-//            assert(receipt?.status == .ok)
+            let receipt = await transactionReceiptProcessor.waitForTransactionReceipt(hash: result.hash)
+
+            assert(receipt?.status == .ok)
             
             callback()
         }
@@ -131,7 +131,7 @@ class SmartContractManager: BaseManager {
             
             let fee = try! await zkSync.estimateFee(estimate)
             
-            //444estimate.eip712Meta?.gasPerPubdata = BigUInt(160000)
+            estimate.eip712Meta?.gasPerPubdata = BigUInt(160000)
             
             var transaction = await CodableTransaction(
                 type: .eip712,
