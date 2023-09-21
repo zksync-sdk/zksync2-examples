@@ -158,9 +158,9 @@ class TokenManager: BaseManager {
     }
 
     func getAllTokens(callback: @escaping (() -> Void)) {
-        zkSync.confirmedTokens(0, limit: 255) { result in
-            print("tokens:", result)
-
+        Task {
+            let result = try? await zkSync.confirmedTokens(0, limit: 255)
+            
             callback()
         }
     }

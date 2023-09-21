@@ -90,62 +90,56 @@ class WithdrawManager: BaseManager {
                 at: EthereumAddress(self.signer.address)
             )!
 
-            zkSync.mainContract { result in
-                DispatchQueue.global().async {
-                    switch result {
-                    case .success(let address):
-                        let zkSyncContract = self.web.contract(
-                            Web3.Utils.IZkSync,
-                            at: EthereumAddress(address)
-                        )!
-
-                        //444let defaultEthereumProvider = DefaultEthereumProvider(self.ethereum, l1ERC20Bridge: l1ERC20Bridge, zkSyncContract: zkSyncContract, gasProvider: DefaultGasProvider())
-
-                        let topic = "L1MessageSent(address,bytes32,bytes)"
-                        let log = receipt.logs.filter({
-                            if $0.address.address == ZkSyncAddresses.MessengerAddress && $0.topics.first == EIP712.keccak256(topic) {
-                                return true
-                            }
-                            return false
-                        })[index]
-
-                        let l2tol1log = receipt.l2ToL1Logs!.filter({
-                            if $0.sender.address == ZkSyncAddresses.MessengerAddress {
-                                return true
-                            }
-                            return false
-                        })[index]
-
-                        self.zkSync.getL2ToL1LogProof(txHash, logIndex: Int(l2tol1log.logIndex)) { result in
-                            DispatchQueue.global().async {
-                                switch result {
-                                case .success(let proof):
-                                    let contract = self.zkSync.web3.contract(Web3.Utils.IL1Messenger)!
-
-                                    let eventData = contract.contract.parseEvent(log).eventData
-                                    let message = eventData?["_message"] as? Data ?? Data()
-
-//444                                    Task {
-//                                        _ = try! await defaultEthereumProvider.finalizeEthWithdrawal(
-//                                            receipt.l1BatchNumber,
-//                                            l2MessageIndex: BigUInt(proof.id),
-//                                            l2TxNumberInBlock: receipt.l1BatchTxIndex,
-//                                            message: message,
-//                                            proof: proof.proof.compactMap({ Data(hex: $0) }),
-//                                            nonce: self.getNonce()
-//                                        )
-//
-//                                        callback()
-//                                    }
-                                case .failure(let error):
-                                    fatalError(error.localizedDescription)
-                                }
-                            }
-                        }
-                    case .failure(let error):
-                        print("Error:", error)
+            do {
+                let address = try await self.zkSync.mainContract()
+                
+                let zkSyncContract = self.web.contract(
+                    Web3.Utils.IZkSync,
+                    at: EthereumAddress(address)
+                )!
+                
+                //444let defaultEthereumProvider = DefaultEthereumProvider(self.ethereum, l1ERC20Bridge: l1ERC20Bridge, zkSyncContract: zkSyncContract, gasProvider: DefaultGasProvider())
+                
+                let topic = "L1MessageSent(address,bytes32,bytes)"
+                let log = receipt.logs.filter({
+                    if $0.address.address == ZkSyncAddresses.MessengerAddress && $0.topics.first == EIP712.keccak256(topic) {
+                        return true
                     }
+                    return false
+                })[index]
+                
+                let l2tol1log = receipt.l2ToL1Logs!.filter({
+                    if $0.sender.address == ZkSyncAddresses.MessengerAddress {
+                        return true
+                    }
+                    return false
+                })[index]
+                
+                do {
+                    let proof = try await self.zkSync.getL2ToL1LogProof(txHash, logIndex: Int(l2tol1log.logIndex))
+                    
+                    let contract = self.zkSync.web3.contract(Web3.Utils.IL1Messenger)!
+                    
+                    let eventData = contract.contract.parseEvent(log).eventData
+                    let message = eventData?["_message"] as? Data ?? Data()
+                    
+                    //444                                    Task {
+                    //                                        _ = try! await defaultEthereumProvider.finalizeEthWithdrawal(
+                    //                                            receipt.l1BatchNumber,
+                    //                                            l2MessageIndex: BigUInt(proof.id),
+                    //                                            l2TxNumberInBlock: receipt.l1BatchTxIndex,
+                    //                                            message: message,
+                    //                                            proof: proof.proof.compactMap({ Data(hex: $0) }),
+                    //                                            nonce: self.getNonce()
+                    //                                        )
+                    //
+                    //                                        callback()
+                    //                                    }
+                } catch {
+                    fatalError(error.localizedDescription)
                 }
+            } catch {
+                print("Error:", error)
             }
         }
     }
