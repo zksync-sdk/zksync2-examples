@@ -46,11 +46,11 @@ class BaseManager {
     }
 
     var signer: ETHSigner {
-        EthSignerImpl(credentials, chainId: chainId)
+        BaseSigner(credentials, chainId: chainId)
     }
     
-    var deployer: DeployerImpl {
-        DeployerImpl(zkSync, web3: web, ethSigner: signer)
+    var deployer: BaseDeployer {
+        BaseDeployer(zkSync, web3: web, ethSigner: signer)
     }
 
     var walletL1: WalletL1 {
