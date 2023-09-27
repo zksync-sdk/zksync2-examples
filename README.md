@@ -2,4 +2,5 @@
 Examples on how to interact with zkSync Era network using 
 SDKs for different languages.
 
-- [go examples](go)
+- [Go examples](go)
+- [JavaScript examples](js)
