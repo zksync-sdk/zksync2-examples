@@ -148,7 +148,7 @@ class WithdrawManager: BaseManager {
         Task {
             let amount = BigUInt(1_000_000_000_000)
             
-            _ = await walletL2.withdraw(
+            _ = try await walletL2.withdraw(
                 signer.address,
                 amount: amount,
                 token: Token.ETH

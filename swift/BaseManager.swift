@@ -26,7 +26,7 @@ class BaseManager {
     var web: Web3
 
     init() {
-        zkSync = ZkSyncClientImpl(Config.zkSyncProviderUrl)
+        zkSync = BaseClient(Config.zkSyncProviderUrl)
         ethClient = EthereumClientImpl(Config.ethereumProviderUrl)
         web = Web3(provider: Web3HttpProvider(url: Config.ethereumProviderUrl, network: .Mainnet))
         
