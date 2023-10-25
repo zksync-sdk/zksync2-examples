@@ -3,15 +3,15 @@
   "version": "0.1.0",
   "license": "MIT",
   "devDependencies": {
-    "@typechain/ethers-v6": "^0.5.0",
     "@types/node": "^20.5.2",
     "ethers": "^6.7.1",
     "ts-node": "^10.9.1",
-    "typechain": "^8.3.1",
-    "typescript": "^5.1.6",
-    "zksync2-js": "^0.1.0"
+    "typescript": "^5.1.6"
   },
   "peerDependencies": {
     "ethers": "^6.7.1"
+  },
+  "dependencies": {
+    "zksync2-js": "^0.2.1"
   }
 }
