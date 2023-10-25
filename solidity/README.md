@@ -31,7 +31,7 @@ docker start -i zksolc
 Run commands in container:
 ```shell
 # download zksolc
-ZKSOLC_VERSION="v1.3.13"
+ZKSOLC_VERSION="v1.3.15"
 wget https://github.com/matter-labs/zksolc-bin/raw/main/linux-amd64/zksolc-linux-amd64-musl-${ZKSOLC_VERSION} -O /bin/zksolc; chmod +x /bin/zksolc
 ```
 
