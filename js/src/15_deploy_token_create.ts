@@ -1,5 +1,5 @@
-import {Provider, types, Wallet, ContractFactory} from "zksync2-js";
-import {Contract, Typed} from "ethers";
+import {Provider, types, Wallet, ContractFactory, Contract} from "zksync2-js";
+import {Typed} from "ethers";
 
 const provider = Provider.getDefaultProvider(types.Network.Goerli);
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
@@ -11,11 +11,10 @@ async function main() {
     const bytecode: string = conf.bytecode;
 
     const factory = new ContractFactory(abi, bytecode, wallet);
-    const contract = await factory.deploy("Crown", "Crown", 18);
-    const tokenAddress = await contract.getAddress();
+    const token = await factory.deploy("Crown", "Crown", 18) as Contract;
+    const tokenAddress = await token.getAddress();
     console.log(`Contract address: ${tokenAddress}`);
 
-    const token = new Contract(tokenAddress, abi, wallet);
     const tx = await token.mint(Typed.address(await wallet.getAddress()), Typed.uint256(10));
     await tx.wait();
     console.log(`Crown tokens: ${await wallet.getBalance(tokenAddress)}`);

@@ -1,5 +1,5 @@
-import {Provider, types, Wallet, ContractFactory} from "zksync2-js";
-import {Contract, ethers} from "ethers";
+import {Provider, types, Wallet, ContractFactory, Contract} from "zksync2-js";
+import {ethers} from "ethers";
 
 const provider = Provider.getDefaultProvider(types.Network.Goerli);
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
@@ -11,13 +11,11 @@ async function main() {
     const bytecode: string = conf.contracts["Incrementer.sol:Incrementer"].bin;
 
     const factory = new ContractFactory(abi, bytecode, wallet, "create2");
-    const contract = await factory.deploy(2, {
+    const incrementer = await factory.deploy(2, {
         customData: {salt: ethers.hexlify(ethers.randomBytes(32))}
-    });
-    const contractAddress = await contract.getAddress();
-    console.log(`Contract address: ${contractAddress}`);
+    }) as Contract;
+    console.log(`Contract address: ${await incrementer.getAddress()}`);
 
-    const incrementer = new Contract(contractAddress, abi, wallet);
     console.log(`Value before Increment method execution: ${await incrementer.get()}`);
 
     const tx = await incrementer.increment();
