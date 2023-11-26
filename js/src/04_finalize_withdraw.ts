@@ -14,7 +14,7 @@ async function main() {
     // On the testnet, withdrawals are automatically finalized. For additional information, please refer
     // to the documentation: https://era.zksync.io/docs/reference/concepts/bridging-asset.html#withdrawals-to-l1.
     // There is no need to execute FinalizeWithdraw, otherwise, an error with code `jj` would occur.
-    if (!wallet.isWithdrawalFinalized(WITHDRAW_TX)) {
+    if (! (await wallet.isWithdrawalFinalized(WITHDRAW_TX))) {
         const finalizeWithdrawTx = await wallet.finalizeWithdrawal(WITHDRAW_TX);
         const receipt = await finalizeWithdrawTx.wait();
         console.log(`Tx: ${receipt.hash}`);

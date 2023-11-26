@@ -14,7 +14,7 @@ async function main() {
     const tx = await wallet.withdraw({
         token: utils.ETH_ADDRESS,
         to: await wallet.getAddress(),
-        amount: 7_000_000_000,
+        amount: ethers.parseEther("0.00020"),
     });
     const receipt =  await tx.wait();
     console.log(`Tx: ${receipt.hash}`);

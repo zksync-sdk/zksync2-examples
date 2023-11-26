@@ -14,7 +14,7 @@ async function main() {
     const tx = await wallet.deposit({
         token: utils.ETH_ADDRESS,
         to: await wallet.getAddress(),
-        amount: 7_000_000_000,
+        amount: ethers.parseEther("0.00020"),
         refundRecipient: await wallet.getAddress()
     });
     const receipt =  await tx.wait();
