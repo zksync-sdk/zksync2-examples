@@ -1,14 +1,14 @@
 import {Provider, types, utils, Wallet} from "zksync2-js";
 import {ethers} from "ethers";
 
-const provider = Provider.getDefaultProvider(types.Network.Goerli);
-const ethProvider = ethers.getDefaultProvider("goerli");
+const provider = Provider.getDefaultProvider(types.Network.Sepolia);
+const ethProvider = ethers.getDefaultProvider("sepolia");
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const wallet = new Wallet(PRIVATE_KEY, provider, ethProvider);
 
 
-const tokenAddress = "0xCd9BDa1d0FC539043D4C80103bdF4f9cb108931B"; // Crown token which can be minted for free
-const paymasterAddress = "0xd660c2F92d3d0634e5A20f26821C43F1b09298fe"; // Paymaster for Crown token
+const tokenAddress = "0xA70dF8446A6AeA0017D60e97e816e141aa28759b"; // Crown token which can be minted for free
+const paymasterAddress = "0x57F48f0d845E0ed7C9Bf066cEbFF64FbeBE6AFEF"; // Paymaster for Crown token
 const token = new ethers.Interface(require('../../solidity/custom_paymaster/token/build/Token.json').abi);
 
 

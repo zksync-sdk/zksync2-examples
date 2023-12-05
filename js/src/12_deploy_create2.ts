@@ -1,7 +1,7 @@
 import {Provider, types, Wallet, ContractFactory, Contract} from "zksync2-js";
 import {ethers, Typed} from "ethers";
 
-const provider = Provider.getDefaultProvider(types.Network.Goerli);
+const provider = Provider.getDefaultProvider(types.Network.Sepolia);
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const wallet = new Wallet(PRIVATE_KEY, provider);
 

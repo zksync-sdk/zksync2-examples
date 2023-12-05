@@ -18,8 +18,8 @@ import (
 func main() {
 	var (
 		PrivateKey        = os.Getenv("PRIVATE_KEY")
-		ZkSyncEraProvider = "https://testnet.era.zksync.dev"
-		EthereumProvider  = "https://rpc.ankr.com/eth_goerli"
+		ZkSyncEraProvider = "https://sepolia.era.zksync.dev"
+		EthereumProvider  = "https://rpc.ankr.com/eth_sepolia"
 		TokenL1Address    = common.HexToAddress("0xc8F8cE6491227a6a2Ab92e67a64011a4Eba1C6CF")
 	)
 

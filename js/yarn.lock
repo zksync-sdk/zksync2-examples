@@ -164,7 +164,7 @@ yn@3.1.1:
   resolved "https://registry.yarnpkg.com/yn/-/yn-3.1.1.tgz#1e87401a09d767c1d5eab26a6e4c185182d2eb50"
   integrity sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==
 
-zksync2-js@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/zksync2-js/-/zksync2-js-0.3.0.tgz#980809fa3db019d33eac41d97992385c14056be7"
-  integrity sha512-PnAA1pJS3Wr4Kc1C+sd3s/3SiRJ6urwpWSFedcJGp7WO8prEik2yywkJY6mQ2Exie5taGrXniFCT20XAKTo8uA==
+zksync2-js@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/zksync2-js/-/zksync2-js-0.4.0.tgz#e9984ae4a9b4450105b1e9565a0dd2e010aa5bd3"
+  integrity sha512-0Z+Yhqz6ZEkw3HHrbNZZT07zb631ALWqbe2exS7DFAqrSxACXx48/sqeYzpTXLJuNiqBXQYrVnHXzIeeqHKSxA==

@@ -23,9 +23,9 @@ During transaction execution, the paymaster receives the ERC20 token from the us
 func main() {
 	var (
 		PrivateKey        = os.Getenv("PRIVATE_KEY")
-		ZkSyncEraProvider = "https://testnet.era.zksync.dev"
-		TokenAddress      = common.HexToAddress("0xCd9BDa1d0FC539043D4C80103bdF4f9cb108931B") // Crown token which can be minted for free
-		PaymasterAddress  = common.HexToAddress("0xd660c2F92d3d0634e5A20f26821C43F1b09298fe") // Paymaster for Crown token
+		ZkSyncEraProvider = "https://sepolia.era.zksync.dev"
+		TokenAddress      = common.HexToAddress("0xA70dF8446A6AeA0017D60e97e816e141aa28759b") // Crown token which can be minted for free
+		PaymasterAddress  = common.HexToAddress("0x57F48f0d845E0ed7C9Bf066cEbFF64FbeBE6AFEF") // Paymaster for Crown token
 	)
 
 	// Connect to zkSync network
