@@ -1,4 +1,4 @@
-import {Provider, types, Wallet} from "zksync2-js";
+import {Provider, types, Wallet} from "zksync-ethers";
 import {ethers} from "ethers";
 
 const provider = Provider.getDefaultProvider(types.Network.Sepolia);
