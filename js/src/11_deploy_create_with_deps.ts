@@ -1,4 +1,4 @@
-import {Provider, types, Wallet, ContractFactory, Contract} from "zksync2-js";
+import {Provider, types, Wallet, ContractFactory, Contract} from "zksync-ethers";
 
 const provider = Provider.getDefaultProvider(types.Network.Sepolia);
 const PRIVATE_KEY = process.env.PRIVATE_KEY;

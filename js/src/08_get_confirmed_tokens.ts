@@ -1,5 +1,4 @@
-import {Provider, types} from "zksync2-js";
-import {ethers} from "ethers";
+import {Provider, types} from "zksync-ethers";
 
 const provider = Provider.getDefaultProvider(types.Network.Sepolia);
 
