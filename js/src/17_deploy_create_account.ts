@@ -4,7 +4,7 @@ const provider = Provider.getDefaultProvider(types.Network.Sepolia);
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const wallet = new Wallet(PRIVATE_KEY, provider);
 
-const tokenAddress = "0xA70dF8446A6AeA0017D60e97e816e141aa28759b";
+const tokenAddress = "0x765F5AF819D818a8e8ee6ff63D8d0e8056DBE150";
 
 async function main() {
     const conf = require("../../solidity/custom_paymaster/paymaster/build/Paymaster.json");

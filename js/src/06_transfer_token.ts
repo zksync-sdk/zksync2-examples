@@ -8,11 +8,11 @@ const wallet = new Wallet(PRIVATE_KEY, provider, ethProvider);
 
 
 async function main() {
-    const token = "0xCd9BDa1d0FC539043D4C80103bdF4f9cb108931B";
+    const token = "0x6a4Fb925583F7D4dF82de62d98107468aE846FD1";
     const receiver = "0x81E9D85b65E9CC8618D85A1110e4b1DF63fA30d9";
 
-    console.log(`Account1 balance before transfer: ${await wallet.getBalance()}`);
-    console.log(`Account2 balance before transfer: ${await provider.getBalance(receiver)}`);
+    console.log(`Account1 balance before transfer: ${await wallet.getBalance(token)}`);
+    console.log(`Account2 balance before transfer: ${await provider.getBalance(receiver, 'latest', token)}`);
 
     const tx = await wallet.transfer({
         token: token,
@@ -22,8 +22,8 @@ async function main() {
     const receipt =  await tx.wait();
     console.log(`Tx: ${receipt.hash}`);
 
-    console.log(`Account1 balance after transfer: ${await wallet.getBalance()}`);
-    console.log(`Account2 balance after transfer: ${await provider.getBalance(receiver)}`);
+    console.log(`Account1 balance after transfer: ${await wallet.getBalance(token)}`);
+    console.log(`Account2 balance after transfer: ${await provider.getBalance(receiver, 'latest', token)}`);
 }
 
 main().then().catch(error => {

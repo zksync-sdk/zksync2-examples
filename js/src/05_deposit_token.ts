@@ -10,7 +10,7 @@ const wallet = new Wallet(PRIVATE_KEY, provider, ethProvider);
 
 async function main() {
     // Crown token which can be mint for free
-    const tokenL1 = "0xc8F8cE6491227a6a2Ab92e67a64011a4Eba1C6CF";
+    const tokenL1 = "0x56E69Fa1BB0d1402c89E3A4E3417882DeA6B14Be";
     const tokenL2 = await provider.l2TokenAddress(tokenL1);
 
     console.log(`L2 balance before deposit: ${await wallet.getBalance(tokenL2)}`);

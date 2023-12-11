@@ -17,7 +17,7 @@ func main() {
 		PrivateKey1       = os.Getenv("PRIVATE_KEY")
 		PublicKey2        = "0x81E9D85b65E9CC8618D85A1110e4b1DF63fA30d9"
 		ZkSyncEraProvider = "https://sepolia.era.zksync.dev"
-		TokenL2Address    = common.HexToAddress("0xCd9BDa1d0FC539043D4C80103bdF4f9cb108931B")
+		TokenL2Address    = common.HexToAddress("0x6a4Fb925583F7D4dF82de62d98107468aE846FD1")
 	)
 
 	// Connect to zkSync network

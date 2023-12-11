@@ -16,7 +16,7 @@ func main() {
 		PrivateKey        = os.Getenv("PRIVATE_KEY")
 		ZkSyncEraProvider = "https://sepolia.era.zksync.dev"
 		EthereumProvider  = "https://rpc.ankr.com/eth_sepolia"
-		TokenL2Address    = common.HexToAddress("0x1958F3a8246B526796DdE3F37fB2b9E04660Bf33")
+		TokenL2Address    = common.HexToAddress("0x6a4Fb925583F7D4dF82de62d98107468aE846FD1")
 	)
 
 	// Connect to zkSync network
