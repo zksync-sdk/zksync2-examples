@@ -27,7 +27,5 @@ jobs:
           pushd local-setup
           docker-compose up -d
           popd
-      - name: Wait for local-setup to be ready
-        run: cd go && go run ./scripts/wait.go
       - name: Run tests
         run: cd go && go test ./test/...
