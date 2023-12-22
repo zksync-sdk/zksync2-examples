@@ -7,6 +7,8 @@ import (
 	"log"
 )
 
+// WARNING
+// Method client.ConfirmedTokens will be removed in the future
 func main() {
 	var (
 		ZkSyncEraProvider = "https://sepolia.era.zksync.dev"
