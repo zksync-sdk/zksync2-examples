@@ -29,5 +29,4 @@ describe("Transfer token", () => {
         expect(result).not.to.be.null;
         expect(balanceAfterTransfer - balanceBeforeTransfer).to.be.equal(BigInt(amount));
     }).timeout(25_000);
-
 });

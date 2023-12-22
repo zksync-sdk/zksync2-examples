@@ -34,5 +34,4 @@ describe("Deposit token", () => {
         expect(l2BalanceAfterDeposit - l2BalanceBeforeDeposit === BigInt(amount)).to.be.true;
         expect(l1BalanceBeforeDeposit - l1BalanceAfterDeposit === BigInt(amount)).to.be.true;
     }).timeout(25_000);
-
 });

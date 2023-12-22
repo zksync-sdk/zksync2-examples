@@ -1,5 +1,5 @@
-import {Provider, types, Wallet, ContractFactory, Contract} from "zksync-ethers";
-import {ethers, Typed} from "ethers";
+import { Provider, types, Wallet, ContractFactory, Contract } from "zksync-ethers";
+import { ethers, Typed } from "ethers";
 
 const provider = Provider.getDefaultProvider(types.Network.Sepolia);
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
@@ -11,9 +11,9 @@ async function main() {
     const bytecode: string = conf.bytecode;
 
     const factory = new ContractFactory(abi, bytecode, wallet, "create2");
-    const token = await factory.deploy("Crown", "Crown", 18,{
-        customData: {salt: ethers.hexlify(ethers.randomBytes(32))}
-    }) as Contract;
+    const token = (await factory.deploy("Crown", "Crown", 18, {
+        customData: { salt: ethers.hexlify(ethers.randomBytes(32)) },
+    })) as Contract;
     const tokenAddress = await token.getAddress();
     console.log(`Contract address: ${tokenAddress}`);
 
@@ -22,6 +22,8 @@ async function main() {
     console.log(`Crown tokens: ${await wallet.getBalance(tokenAddress)}`);
 }
 
-main().then().catch(error => {
-    console.log(`Error: ${error}`);
-})
+main()
+    .then()
+    .catch((error) => {
+        console.log(`Error: ${error}`);
+    });
