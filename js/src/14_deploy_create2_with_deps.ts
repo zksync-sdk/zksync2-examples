@@ -1,5 +1,5 @@
-import {Provider, types, Wallet, ContractFactory, Contract} from "zksync-ethers";
-import {ethers} from "ethers";
+import { Provider, types, Wallet, ContractFactory, Contract } from "zksync-ethers";
+import { ethers } from "ethers";
 
 const provider = Provider.getDefaultProvider(types.Network.Sepolia);
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
@@ -11,17 +11,19 @@ async function main() {
     const bytecode: string = conf.contracts["Demo.sol:Demo"].bin;
 
     const factory = new ContractFactory(abi, bytecode, wallet, "create2");
-    const demo = await factory.deploy({
+    const demo = (await factory.deploy({
         customData: {
             salt: ethers.hexlify(ethers.randomBytes(32)),
-            factoryDeps: [conf.contracts["Foo.sol:Foo"].bin]
-        }
-    }) as Contract;
+            factoryDeps: [conf.contracts["Foo.sol:Foo"].bin],
+        },
+    })) as Contract;
     console.log(`Contract address: ${await demo.getAddress()}`);
 
     console.log(`Value: ${await demo.getFooName()}`);
 }
 
-main().then().catch(error => {
-    console.log(`Error: ${error}`);
-})
+main()
+    .then()
+    .catch((error) => {
+        console.log(`Error: ${error}`);
+    });

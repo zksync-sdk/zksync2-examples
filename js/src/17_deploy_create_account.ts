@@ -1,4 +1,4 @@
-import {Provider, types, Wallet, ContractFactory} from "zksync-ethers";
+import { Provider, types, Wallet, ContractFactory } from "zksync-ethers";
 
 const provider = Provider.getDefaultProvider(types.Network.Sepolia);
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
@@ -11,11 +11,13 @@ async function main() {
     const abi = conf.abi;
     const bytecode: string = conf.bytecode;
 
-    const factory = new ContractFactory(abi, bytecode, wallet, 'createAccount');
+    const factory = new ContractFactory(abi, bytecode, wallet, "createAccount");
     const account = await factory.deploy(tokenAddress);
     console.log(`Account address: ${await account.getAddress()}`);
 }
 
-main().then().catch(error => {
-    console.log(`Error: ${error}`);
-})
+main()
+    .then()
+    .catch((error) => {
+        console.log(`Error: ${error}`);
+    });

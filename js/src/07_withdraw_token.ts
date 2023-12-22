@@ -1,11 +1,10 @@
-import {Provider, types, Wallet} from "zksync-ethers";
-import {ethers} from "ethers";
+import { Provider, types, Wallet } from "zksync-ethers";
+import { ethers } from "ethers";
 
 const provider = Provider.getDefaultProvider(types.Network.Sepolia);
 const ethProvider = ethers.getDefaultProvider("sepolia");
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const wallet = new Wallet(PRIVATE_KEY, provider, ethProvider);
-
 
 async function main() {
     const token = "0x6a4Fb925583F7D4dF82de62d98107468aE846FD1";
@@ -18,7 +17,7 @@ async function main() {
         to: await wallet.getAddress(),
         amount: 5,
     });
-    const receipt =  await tx.wait();
+    const receipt = await tx.wait();
     console.log(`Tx: ${receipt.hash}`);
 
     // The duration for submitting a withdrawal transaction to L1 can last up to 24 hours. For additional information,
@@ -27,6 +26,8 @@ async function main() {
     // To learn more about how to achieve this, please take a look at the 04_finalize_withdraw.ts script.
 }
 
-main().then().catch(error => {
-    console.log(`Error: ${error}`);
-})
+main()
+    .then()
+    .catch((error) => {
+        console.log(`Error: ${error}`);
+    });
