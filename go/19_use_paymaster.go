@@ -24,7 +24,7 @@ func main() {
 	var (
 		PrivateKey        = os.Getenv("PRIVATE_KEY")
 		ZkSyncEraProvider = "https://sepolia.era.zksync.dev"
-		TokenAddress      = common.HexToAddress("0x765F5AF819D818a8e8ee6ff63D8d0e8056DBE150") // Crown token which can be minted for free
+		TokenAddress      = common.HexToAddress("0xA70dF8446A6AeA0017D60e97e816e141aa28759b") // Crown token which can be minted for free
 		PaymasterAddress  = common.HexToAddress("0x57F48f0d845E0ed7C9Bf066cEbFF64FbeBE6AFEF") // Paymaster for Crown token
 	)
 
