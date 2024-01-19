@@ -1,0 +1,9 @@
+[project]
+name = "zksync2-examples"
+description = "zkSync2 python examples"
+readme = "README.md"
+requires-python = ">=3.8"
+
+[project.urls]
+"Homepage" = "https://github.com/zksync-sdk/zksync2-examples"
+"Bug Tracker" = "https://github.com/zksync-sdk/zksync2-examples/issues"
