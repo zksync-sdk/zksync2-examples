@@ -2,10 +2,11 @@
 
 ![Era Logo](https://github.com/matter-labs/era-contracts/raw/main/eraLogo.svg)
 
-Examples on how to interact with zkSync Era network using SDKs for different languages.
+Examples on how to interact with zkSync Era network using different SDKs.
 
-- [Go examples](go)
-- [JavaScript examples](js)
+- [Go](go)
+- [JavaScript](js)
+- [Python](python)
 
 ## 🤝 Contributing
 
