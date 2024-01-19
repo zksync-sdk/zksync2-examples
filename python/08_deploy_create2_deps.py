@@ -125,7 +125,7 @@ if __name__ == "__main__":
     account: LocalAccount = Account.from_key(PRIVATE_KEY)
 
     # Provide a compiled JSON source contract
-    contract_path = Path("solidity/demo/build/combined.json")
+    contract_path = Path("../solidity/demo/build/combined.json")
 
     # Perform contract deployment
     deploy_contract(zk_web3, account, contract_path)

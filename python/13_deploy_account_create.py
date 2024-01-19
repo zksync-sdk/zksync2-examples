@@ -130,7 +130,7 @@ if __name__ == "__main__":
     account: LocalAccount = Account.from_key(PRIVATE_KEY)
 
     # Provide a compiled JSON source contract
-    contract_path = Path("solidity/custom_paymaster/build/Paymaster.json")
+    contract_path = Path("../solidity/custom_paymaster/paymaster/build/Paymaster.json")
 
     # Crown token than can be minted for free
     token_address = zk_web3.to_checksum_address("0xA70dF8446A6AeA0017D60e97e816e141aa28759b")
