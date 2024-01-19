@@ -133,7 +133,7 @@ if __name__ == "__main__":
     account: LocalAccount = Account.from_key(PRIVATE_KEY)
 
     # Provide a compiled JSON source contract
-    contract_path = Path("solidity/custom_paymaster/build/Token.json")
+    contract_path = Path("../solidity/custom_paymaster/token/build/Token.json")
 
     constructor_arguments = {"name_": "Crown", "symbol_": "Crown", "decimals_": 18}
 
