@@ -15,14 +15,11 @@
         "typescript": "^5.1.6"
     },
     "peerDependencies": {
-        "ethers": "^6.9.0"
-    },
-    "dependencies": {
-        "zksync-ethers": "^6.0.0"
+        "ethers": "^6.7.1"
     },
     "scripts": {
-        "test:prepare": "cd  tests/setup/ && ./setup.sh && cd ../..",
-        "test:wait": "ts-node tests/wait.ts",
+        "test:prepare": "ts-node scripts/setup.ts",
+        "test:wait": "ts-node scripts/wait.ts",
         "test": "mocha -r ts-node/register tests/*.test.ts",
         "lint": "prettier . --write",
         "lint:check": "prettier . --check",
