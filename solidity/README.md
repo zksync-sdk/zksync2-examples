@@ -93,7 +93,7 @@ docker rm zksolc
 On host machine, for each smart contract there in `build` folder there are binaries
 and `combinned.json` files.
 
-## Generate bindings
+## Generate Golang bindings 
 
 Next step is to use `abigen` tool along with `combined.json` file to generate
 smart contract bindings for golang.
