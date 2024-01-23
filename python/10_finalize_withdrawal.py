@@ -32,6 +32,6 @@ if __name__ == "__main__":
     wallet = Wallet(zk_web3, eth_web3, account)
 
     # Finalize withdraw of previous successful withdraw transaction
-    tx_receipt = wallet.finalize_withdrawal("0x8007ed5a42d763f07595e17448244218b30b722d6a21517cc700a7328b162c73")
+    tx_receipt = wallet.finalize_withdrawal("<TX_HASH>")
 
     print(f"Finalize withdraw transaction: {tx_receipt['transactionHash'].hex()}")
