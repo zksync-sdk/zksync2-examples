@@ -1,10 +1,9 @@
 import * as chai from "chai";
 import "./custom-matchers";
 import { Provider, types, ContractFactory, Wallet, Contract } from "zksync-ethers";
-import {ethers, Typed} from "ethers";
+import { ethers, Typed } from "ethers";
 
 const { expect } = chai;
-
 
 describe("ContractFactory", () => {
     const PRIVATE_KEY = "0x7726827caac94a7f9e1b160f7ea819f172f7b6f9d2a97f992c38edeab82d4110";
@@ -21,7 +20,7 @@ describe("ContractFactory", () => {
         const bytecode: string = conf.contracts["Storage.sol:Storage"].bin;
 
         const factory = new ContractFactory(abi, bytecode, wallet);
-        const storage = await factory.deploy() as Contract;
+        const storage = (await factory.deploy()) as Contract;
 
         const code = await provider.getCode(await storage.getAddress());
         expect(code).not.to.be.null;
@@ -42,7 +41,7 @@ describe("ContractFactory", () => {
         const bytecode: string = conf.contracts["Incrementer.sol:Incrementer"].bin;
 
         const factory = new ContractFactory(abi, bytecode, wallet);
-        const incrementer = await factory.deploy(2) as Contract;
+        const incrementer = (await factory.deploy(2)) as Contract;
 
         const code = await provider.getCode(await incrementer.getAddress());
         expect(code).not.to.be.null;
@@ -92,12 +91,7 @@ describe("ContractFactory", () => {
         const abi = conf.abi;
         const bytecode: string = conf.bytecode;
 
-        const accountFactory = new ContractFactory(
-            abi,
-            bytecode,
-            wallet,
-            "createAccount",
-        );
+        const accountFactory = new ContractFactory(abi, bytecode, wallet, "createAccount");
         const paymasterContract = await accountFactory.deploy(await provider.l2TokenAddress(l1DAI));
 
         const code = await provider.getCode(await paymasterContract.getAddress());
@@ -190,16 +184,10 @@ describe("ContractFactory", () => {
         const abi = conf.abi;
         const bytecode: string = conf.bytecode;
 
-        const factory = new ContractFactory(
-            abi,
-            bytecode,
-            wallet,
-            "create2Account",
-        );
-        const account = await factory.deploy(
-            await provider.l2TokenAddress(l1DAI),
-            { customData: { salt: ethers.hexlify(ethers.randomBytes(32)) } },
-        );
+        const factory = new ContractFactory(abi, bytecode, wallet, "create2Account");
+        const account = await factory.deploy(await provider.l2TokenAddress(l1DAI), {
+            customData: { salt: ethers.hexlify(ethers.randomBytes(32)) },
+        });
 
         const code = await provider.getCode(await account.getAddress());
         expect(code).not.to.be.null;

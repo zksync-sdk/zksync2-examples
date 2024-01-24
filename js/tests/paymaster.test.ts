@@ -1,9 +1,9 @@
 import * as chai from "chai";
 import "./custom-matchers";
-import {ContractFactory, Provider, types, utils, Wallet} from "zksync-ethers";
-import {Contract, ethers, Typed} from "ethers";
+import { ContractFactory, Provider, types, utils, Wallet } from "zksync-ethers";
+import { Contract, ethers, Typed } from "ethers";
 
-const {expect} = chai;
+const { expect } = chai;
 
 describe("Paymaster", () => {
     const PRIVATE_KEY = "0x7726827caac94a7f9e1b160f7ea819f172f7b6f9d2a97f992c38edeab82d4110";
@@ -95,7 +95,7 @@ describe("Paymaster", () => {
         expect(walletBalanceBeforeTx - walletBalanceAfterTx >= BigInt(0)).to.be.true;
         expect(
             walletTokenBalanceAfterTx ==
-            walletTokenBalanceBeforeTx - BigInt(MINIMAL_ALLOWANCE) + BigInt(MINT_AMOUNT),
+                walletTokenBalanceBeforeTx - BigInt(MINIMAL_ALLOWANCE) + BigInt(MINT_AMOUNT),
         ).to.be.true;
     }).timeout(30_000);
 });
