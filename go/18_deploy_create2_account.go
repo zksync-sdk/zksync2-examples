@@ -15,7 +15,7 @@ func main() {
 	var (
 		PrivateKey        = os.Getenv("PRIVATE_KEY")
 		ZkSyncEraProvider = "https://sepolia.era.zksync.dev"
-		TokenAddress      = "0xA70dF8446A6AeA0017D60e97e816e141aa28759b" // Crown token which can be minted for free
+		TokenAddress      = "0x927488F48ffbc32112F1fF721759649A89721F8F" // Crown token which can be minted for free
 	)
 
 	// Connect to zkSync network

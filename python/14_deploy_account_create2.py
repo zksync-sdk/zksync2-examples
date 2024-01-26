@@ -136,7 +136,7 @@ if __name__ == "__main__":
     contract_path = Path("../solidity/custom_paymaster/paymaster/build/Paymaster.json")
 
     # Crown token than can be minted for free
-    token_address = zk_web3.to_checksum_address("0xA70dF8446A6AeA0017D60e97e816e141aa28759b")
+    token_address = zk_web3.to_checksum_address("0x927488F48ffbc32112F1fF721759649A89721F8F")
     constructor_arguments = {"_erc20": token_address}
 
     # Perform contract deployment

@@ -38,9 +38,9 @@ if __name__ == "__main__":
     account: LocalAccount = Account.from_key(PRIVATE_KEY)
 
     # Crown token than can be minted for free
-    token_address = zk_web3.to_checksum_address("0xA70dF8446A6AeA0017D60e97e816e141aa28759b")
+    token_address = zk_web3.to_checksum_address("0x927488F48ffbc32112F1fF721759649A89721F8F")
     # Paymaster for Crown token
-    paymaster_address = zk_web3.to_checksum_address("0x57F48f0d845E0ed7C9Bf066cEbFF64FbeBE6AFEF")
+    paymaster_address = zk_web3.to_checksum_address("0x13D0D8550769f59aa241a41897D4859c87f7Dd46")
 
     # Provide a compiled JSON source contract
     contract_path = Path("../solidity/custom_paymaster/token/build/Token.json")

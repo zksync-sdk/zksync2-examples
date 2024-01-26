@@ -6,8 +6,8 @@ const ethProvider = ethers.getDefaultProvider("sepolia");
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const wallet = new Wallet(PRIVATE_KEY, provider, ethProvider);
 
-const tokenAddress = "0xA70dF8446A6AeA0017D60e97e816e141aa28759b"; // Crown token which can be minted for free
-const paymasterAddress = "0x57F48f0d845E0ed7C9Bf066cEbFF64FbeBE6AFEF"; // Paymaster for Crown token
+const tokenAddress = "0x927488F48ffbc32112F1fF721759649A89721F8F"; // Crown token which can be minted for free
+const paymasterAddress = "0x13D0D8550769f59aa241a41897D4859c87f7Dd46"; // Paymaster for Crown token
 const token = new ethers.Interface(
     require("../../solidity/custom_paymaster/token/build/Token.json").abi,
 );
