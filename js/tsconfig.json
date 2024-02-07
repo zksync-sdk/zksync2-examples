@@ -2,7 +2,6 @@
     "compilerOptions": {
         "module": "CommonJS",
         "target": "ES2020",
-        "moduleResolution": "Node16",
 
         "outDir": "./build",
         "esModuleInterop": true,
@@ -14,14 +13,27 @@
         "noImplicitOverride": true
     },
     "files": [
-        "./src/01_deposit.ts",
-        "./src/02_transfer.ts",
-        "./src/03_withdraw.ts",
-        "./src/04_finalize_withdraw.ts",
-        "./src/05_deposit_token.ts",
-        "./src/06_transfer_token.ts",
-        "./src/07_withdraw_token.ts",
-        "./src/08_get_confirmed_tokens.ts",
-        "./src/09_use_paymaster.ts"
+        "src/01_deposit.ts",
+        "src/02_transfer.ts",
+        "src/03_transfer_paymaster.ts",
+        "src/04_withdraw.ts",
+        "src/05_withdraw_paymaster.ts", 
+        "src/06_finalize_withdraw.ts",
+        "src/07_deposit_token.ts", 
+        "src/08_transfer_token.ts",
+        "src/09_transfer_token_paymaster.ts", 
+        "src/10_withdraw_token.ts",
+        "src/11_withdraw_token_paymaster.ts",
+        "src/12_deploy_create.ts", 
+        "src/13_deploy_create_with_constructor.ts", 
+        "src/14_deploy_create_with_deps.ts", 
+        "src/15_deploy_create2.ts", 
+        "src/16_deploy_create2_with_constructor.ts",
+        "src/17_deploy_create2_with_deps.ts", 
+        "src/18_deploy_token_create.ts", 
+        "src/19_deploy_token_create2.ts", 
+        "src/20_deploy_create_account.ts",
+        "src/21_deploy_create2_account.ts", 
+        "src/22_use_paymaster.ts"
     ]
 }
