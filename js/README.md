@@ -13,7 +13,7 @@ SDK can be used for development. The examples demonstrate how to:
 8. Transfer token on zkSync Era.
 9. Transfer token on zkSync Era using paymaster to pay fee with another token.
 10. Withdraw token from zkSync Era to Ethereum.
-11. Withdraw token from zkSync Era to Ethereum to pay fee with another token. 
+11. Withdraw token from zkSync Era to Ethereum to pay fee with another token.
 12. Deploy a smart contract using create method.
 13. Deploy a smart contract with constructor using create method.
 14. Deploy a smart contract with dependency using create method.
