@@ -22,7 +22,7 @@ async function main() {
         token: utils.ETH_ADDRESS,
         to: await wallet.getAddress(),
         amount: ethers.parseEther("0.00020"),
-        paymasterParamas: utils.getPaymasterParams(paymasterAddress, {
+        paymasterParams: utils.getPaymasterParams(paymasterAddress, {
             type: "ApprovalBased",
             token: tokenAddress,
             minimalAllowance: 1,

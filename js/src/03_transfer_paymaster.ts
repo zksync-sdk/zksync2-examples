@@ -23,7 +23,7 @@ async function main() {
     const tx = await wallet.transfer({
         to: receiver,
         amount: ethers.parseEther("0.01"),
-        paymasterParamas: utils.getPaymasterParams(paymasterAddress, {
+        paymasterParams: utils.getPaymasterParams(paymasterAddress, {
             type: "ApprovalBased",
             token: tokenAddress,
             minimalAllowance: 1,

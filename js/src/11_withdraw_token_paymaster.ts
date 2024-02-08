@@ -24,7 +24,7 @@ async function main() {
         token: token,
         to: await wallet.getAddress(),
         amount: 5,
-        paymasterParamas: utils.getPaymasterParams(paymasterAddress, {
+        paymasterParams: utils.getPaymasterParams(paymasterAddress, {
             type: "ApprovalBased",
             token: tokenAddress,
             minimalAllowance: 1,

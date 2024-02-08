@@ -27,7 +27,7 @@ async function main() {
         token: token,
         to: receiver,
         amount: 5,
-        paymasterParamas: utils.getPaymasterParams(paymasterAddress, {
+        paymasterParams: utils.getPaymasterParams(paymasterAddress, {
             type: "ApprovalBased",
             token: tokenAddress,
             minimalAllowance: 1,
