@@ -43,7 +43,7 @@ if __name__ == "__main__":
     paymaster_address = zk_web3.to_checksum_address("0x13D0D8550769f59aa241a41897D4859c87f7Dd46")
 
     # Provide a compiled JSON source contract
-    contract_path = Path("../solidity/custom_paymaster/token/build/Token.json")
+    token_path = Path("../solidity/custom_paymaster/token/build/Token.json")
     token_json = ContractEncoder.from_json(zk_web3, token_path, JsonConfiguration.STANDARD)
 
     token_contract = zk_web3.zksync.contract(token_address, abi=token_json.abi)
