@@ -29,7 +29,7 @@ if __name__ == "__main__":
     PROVIDER = "https://sepolia.era.zksync.dev"
 
     # Get the private key from OS environment variables
-    PRIVATE_KEY = bytes.fromhex(os.environ.get("PRIVATE_KEY"))
+    PRIVATE_KEY = HexStr("c273a8616a4c58de9e58750fd2672d07b10497d64cd91b5942cce0909aaa391a")
 
     # Connect to zkSync network
     zk_web3 = ZkSyncBuilder.build(PROVIDER)
@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
     # Provide a compiled JSON source contract
     contract_path = Path("../solidity/custom_paymaster/token/build/Token.json")
-    token_json = ContractEncoder.from_json(zk_web3, token_path, JsonConfiguration.STANDARD)
+    token_json = ContractEncoder.from_json(zk_web3, contract_path, JsonConfiguration.STANDARD)
 
     token_contract = zk_web3.zksync.contract(token_address, abi=token_json.abi)
 
@@ -143,7 +143,7 @@ if __name__ == "__main__":
         max_priority_fee_per_gas=100_000_000,
         paymaster_params=paymaster_params
     )
-
+    a = tx_func_call.tx;
     # ZkSync transaction gas estimation
     estimate_gas = zk_web3.zksync.eth_estimate_gas(tx_func_call.tx)
     print(f"Fee for transaction is: {estimate_gas * gas_price}")

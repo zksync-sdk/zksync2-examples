@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // === Web3 client ===
+    implementation 'org.web3j:core:4.9.7'
+
+    // === Web3 abi ===
+    implementation 'org.web3j:abi:4.9.7'
+
+    // === For Eth Signing ===
+    implementation 'org.web3j:crypto:4.9.7'
+    implementation 'io.zksync:zksync2:v0.2.0'
+
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -184,7 +184,7 @@ if __name__ == "__main__":
     PROVIDER = "https://sepolia.era.zksync.dev"
 
     # Get the private key from OS environment variables
-    PRIVATE_KEY = bytes.fromhex(os.environ.get("PRIVATE_KEY"))
+    PRIVATE_KEY = HexStr("0x7726827caac94a7f9e1b160f7ea819f172f7b6f9d2a97f992c38edeab82d4110")
 
     # Connect to zkSync network
     zk_web3 = ZkSyncBuilder.build(PROVIDER)
