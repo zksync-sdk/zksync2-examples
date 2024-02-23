@@ -13,10 +13,7 @@ import (
 )
 
 func TestDepositToken(t *testing.T) {
-	tokenData := readToken()
 	amount := big.NewInt(5)
-	l1TokenAddress := common.HexToAddress(tokenData.L1Address)
-	l2TokenAddress := common.HexToAddress(tokenData.L2Address)
 
 	client, err := clients.Dial(ZkSyncEraProvider)
 	defer client.Close()
@@ -29,15 +26,15 @@ func TestDepositToken(t *testing.T) {
 	wallet, err := accounts.NewWallet(common.Hex2Bytes(PrivateKey), &client, ethClient)
 	assert.NoError(t, err, "NewWallet should not return an error")
 
-	l2BalanceBeforeDeposit, err := wallet.Balance(context.Background(), l2TokenAddress, nil)
+	l2BalanceBeforeDeposit, err := wallet.Balance(context.Background(), L2Dai, nil)
 	assert.NoError(t, err, "Balance should not return an error")
 
-	l1BalanceBeforeDeposit, err := wallet.BalanceL1(nil, l1TokenAddress)
+	l1BalanceBeforeDeposit, err := wallet.BalanceL1(nil, L1Dai)
 	assert.NoError(t, err, "BalanceL1 should not return an error")
 
 	tx, err := wallet.Deposit(nil, accounts.DepositTransaction{
 		To:              wallet.Address(),
-		Token:           l1TokenAddress,
+		Token:           L1Dai,
 		Amount:          amount,
 		ApproveERC20:    true,
 		RefundRecipient: wallet.Address(),
@@ -54,10 +51,10 @@ func TestDepositToken(t *testing.T) {
 	assert.NoError(t, err, "bind.WaitMined should not return an error")
 	assert.NotNil(t, l2Receipt.BlockHash, "Transaction should be mined")
 
-	l2BalanceAfterDeposit, err := wallet.Balance(context.Background(), l2TokenAddress, nil)
+	l2BalanceAfterDeposit, err := wallet.Balance(context.Background(), L2Dai, nil)
 	assert.NoError(t, err, "Balance should not return an error")
 
-	l1BalanceAfterDeposit, err := wallet.BalanceL1(nil, l1TokenAddress)
+	l1BalanceAfterDeposit, err := wallet.BalanceL1(nil, L1Dai)
 	assert.NoError(t, err, "BalanceL1 should not return an error")
 
 	assert.True(t, new(big.Int).Sub(l2BalanceAfterDeposit, l2BalanceBeforeDeposit).Cmp(amount) >= 0, "Balance on L2 should be increased")

@@ -7,11 +7,10 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/zksync-sdk/zksync2-go/accounts"
 	"github.com/zksync-sdk/zksync2-go/clients"
-	"github.com/zksync-sdk/zksync2-go/utils"
 	"log"
 	"math/big"
 	"os"
-	"zksync2-examples/contracts/crown"
+	"zksync2-examples/contracts/token"
 )
 
 func main() {
@@ -33,8 +32,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	// Read token contract from standard json
-	_, tokenAbi, bytecode, err := utils.ReadStandardJson("../solidity/custom_paymaster/token/build/Token.json")
+	tokenAbi, err := token.TokenMetaData.GetAbi()
 	if err != nil {
 		log.Panic(err)
 	}
@@ -45,43 +43,36 @@ func main() {
 	}
 
 	//Deploy smart contract
-	hash, err := wallet.Deploy(nil, accounts.Create2Transaction{Bytecode: bytecode, Calldata: constructor})
+	hash, err := wallet.Deploy(nil, accounts.Create2Transaction{
+		Bytecode: common.FromHex(token.TokenMetaData.Bin),
+		Calldata: constructor})
 	if err != nil {
 		log.Panic(err)
 	}
 	fmt.Println("Transaction: ", hash)
 
 	// Wait unit transaction is finalized
-	_, err = client.WaitMined(context.Background(), hash)
+	receipt, err := client.WaitMined(context.Background(), hash)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	// Get address of deployed smart contract
-	tokenAddress, err := utils.Create2Address(
-		wallet.Address(),
-		bytecode,
-		constructor,
-		nil,
-	)
-	if err != nil {
-		log.Panic(err)
-	}
+	tokenAddress := receipt.ContractAddress
 	fmt.Println("Token address", tokenAddress.String())
 
 	// Create instance of token contract
-	token, err := crown.NewCrown(tokenAddress, client)
+	tokenContract, err := token.NewToken(tokenAddress, client)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	symbol, err := token.Symbol(nil)
+	symbol, err := tokenContract.Symbol(nil)
 	if err != nil {
 		log.Panic(err)
 	}
 	fmt.Println("Symbol: ", symbol)
 
-	decimals, err := token.Decimals(nil)
+	decimals, err := tokenContract.Decimals(nil)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -91,7 +82,7 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	mint, err := token.Mint(opts, wallet.Address(), big.NewInt(5))
+	mint, err := tokenContract.Mint(opts, wallet.Address(), big.NewInt(5))
 	if err != nil {
 		log.Panic(err)
 	}

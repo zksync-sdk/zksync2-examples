@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/stretchr/testify/assert"
@@ -12,10 +13,7 @@ import (
 )
 
 func TestWithdrawToken(t *testing.T) {
-	tokenData := readToken()
 	amount := big.NewInt(5)
-	//l1TokenAddress := common.HexToAddress(tokenData.L1Address)
-	l2TokenAddress := common.HexToAddress(tokenData.L2Address)
 
 	client, err := clients.Dial(ZkSyncEraProvider)
 	defer client.Close()
@@ -28,29 +26,33 @@ func TestWithdrawToken(t *testing.T) {
 	wallet, err := accounts.NewWallet(common.Hex2Bytes(PrivateKey), &client, ethClient)
 	assert.NoError(t, err, "NewWallet should not return an error")
 
-	l2BalanceBeforeWithdrawal, err := wallet.Balance(context.Background(), l2TokenAddress, nil)
+	l2BalanceBeforeWithdrawal, err := wallet.Balance(context.Background(), L2Dai, nil)
 	assert.NoError(t, err, "Balance should not return an error")
 
-	//l1BalanceBeforeWithdrawal, err := wallet.BalanceL1(nil, l1TokenAddress)
-	//assert.NoError(t, err, "BalanceL1 should not return an error")
-
-	tx, err := wallet.Withdraw(nil, accounts.WithdrawalTransaction{
+	withdrawTx, err := wallet.Withdraw(nil, accounts.WithdrawalTransaction{
 		To:     wallet.Address(),
 		Amount: amount,
-		Token:  l2TokenAddress,
+		Token:  L2Dai,
 	})
 	assert.NoError(t, err, "Withdraw should not return an error")
 
-	receipt, err := client.WaitMined(context.Background(), tx.Hash())
+	withdrawReceipt, err := client.WaitFinalized(context.Background(), withdrawTx.Hash())
 	assert.NoError(t, err, "client.WaitMined should not return an error")
-	assert.NotNil(t, receipt.BlockHash, "Transaction should be mined")
+	assert.NotNil(t, withdrawReceipt.BlockHash, "Withdraw transaction should be mined")
 
-	l2BalanceAfterWithdrawal, err := wallet.Balance(context.Background(), l2TokenAddress, nil)
+	isWithdrawFinalized, err := wallet.IsWithdrawFinalized(nil, withdrawTx.Hash(), 0)
+	assert.NoError(t, err, "IsWithdrawFinalized should not return an error")
+	assert.False(t, isWithdrawFinalized, "Withdraw transaction should not be finalized")
+
+	finalizeWithdrawTx, err := wallet.FinalizeWithdraw(nil, withdrawTx.Hash(), 0)
+	assert.NoError(t, err, "FinalizeWithdraw should not return an error")
+
+	finalizeWithdrawReceipt, err := bind.WaitMined(context.Background(), ethClient, finalizeWithdrawTx)
+	assert.NoError(t, err, "bind.WaitMined should not return an error")
+	assert.NotNil(t, finalizeWithdrawReceipt.BlockHash, "Finalize withdraw transaction should be mined")
+
+	l2BalanceAfterWithdrawal, err := wallet.Balance(context.Background(), L2Dai, nil)
 	assert.NoError(t, err, "Balance should not return an error")
 
-	//l1BalanceAfterWithdrawal, err := wallet.BalanceL1(nil, l1TokenAddress)
-	//assert.NoError(t, err, "BalanceL1 should not return an error")
-
 	assert.True(t, new(big.Int).Sub(l2BalanceBeforeWithdrawal, l2BalanceAfterWithdrawal).Cmp(amount) >= 0, "Balance on L2 should be decreased")
-	//assert.True(t, new(big.Int).Sub(l1BalanceBeforeDeposit, l1BalanceAfterDeposit).Cmp(amount) >= 0, "Balance on L1 should be decreased")
 }

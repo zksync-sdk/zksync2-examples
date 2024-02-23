@@ -12,7 +12,7 @@ import (
 	"log"
 	"math/big"
 	"os"
-	"zksync2-examples/contracts/crown"
+	"zksync2-examples/contracts/token"
 )
 
 /*
@@ -24,8 +24,8 @@ func main() {
 	var (
 		PrivateKey        = os.Getenv("PRIVATE_KEY")
 		ZkSyncEraProvider = "https://sepolia.era.zksync.dev"
-		TokenAddress      = common.HexToAddress("0x927488F48ffbc32112F1fF721759649A89721F8F") // Crown token which can be minted for free
-		PaymasterAddress  = common.HexToAddress("0x13D0D8550769f59aa241a41897D4859c87f7Dd46") // Paymaster for Crown token
+		TokenAddress      = common.HexToAddress("0x927488F48ffbc32112F1fF721759649A89721F8F") // Crown tokenContract which can be minted for free
+		PaymasterAddress  = common.HexToAddress("0x13D0D8550769f59aa241a41897D4859c87f7Dd46") // Paymaster for Crown tokenContract
 	)
 
 	// Connect to zkSync network
@@ -41,10 +41,10 @@ func main() {
 		log.Panic(err)
 	}
 
-	// Get token contract
-	token, err := crown.NewCrown(TokenAddress, client)
+	// Get tokenContract contract
+	tokenContract, err := token.NewToken(TokenAddress, client)
 	if err != nil {
-		log.Panic(token)
+		log.Panic(tokenContract)
 	}
 
 	// Transfer some ETH to paymaster, so it can pay fee with ETH
@@ -67,7 +67,7 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	tx, err := token.Mint(opts, wallet.Address(), big.NewInt(10))
+	tx, err := tokenContract.Mint(opts, wallet.Address(), big.NewInt(10))
 	if err != nil {
 		log.Panic(err)
 	}
@@ -76,18 +76,18 @@ func main() {
 		log.Panic(err)
 	}
 
-	// Read token and ETH balances from user and paymaster accounts
+	// Read tokenContract and ETH balances from user and paymaster accounts
 	balance, err := wallet.Balance(context.Background(), utils.EthAddress, nil)
 	if err != nil {
 		log.Panic(err)
 	}
 	fmt.Println("Account balance before mint: ", balance)
 
-	tokenBalance, err := token.BalanceOf(nil, wallet.Address())
+	tokenBalance, err := tokenContract.BalanceOf(nil, wallet.Address())
 	if err != nil {
 		log.Panic(err)
 	}
-	fmt.Println("Account token balance before mint: ", tokenBalance)
+	fmt.Println("Account tokenContract balance before mint: ", tokenBalance)
 
 	balance, err = client.BalanceAt(context.Background(), PaymasterAddress, nil)
 	if err != nil {
@@ -95,18 +95,18 @@ func main() {
 	}
 	fmt.Println("Paymaster balance before mint: ", balance)
 
-	tokenBalance, err = token.BalanceOf(nil, TokenAddress)
+	tokenBalance, err = tokenContract.BalanceOf(nil, TokenAddress)
 	if err != nil {
 		log.Panic(err)
 	}
-	fmt.Println("Paymaster token balance before mint: ", tokenBalance)
+	fmt.Println("Paymaster tokenContract balance before mint: ", tokenBalance)
 
-	abi, err := crown.CrownMetaData.GetAbi()
+	abi, err := token.TokenMetaData.GetAbi()
 	if err != nil {
 		log.Panic(err)
 	}
 
-	// Encode mint function from token contract
+	// Encode mint function from tokenContract contract
 	calldata, err := abi.Pack("mint", wallet.Address(), big.NewInt(7))
 	if err != nil {
 		log.Panic(err)
@@ -150,11 +150,11 @@ func main() {
 	}
 	fmt.Println("Account balance after mint: ", balance)
 
-	tokenBalance, err = token.BalanceOf(nil, wallet.Address())
+	tokenBalance, err = tokenContract.BalanceOf(nil, wallet.Address())
 	if err != nil {
 		log.Panic(err)
 	}
-	fmt.Println("Account token balance after mint: ", tokenBalance)
+	fmt.Println("Account tokenContract balance after mint: ", tokenBalance)
 
 	balance, err = client.BalanceAt(context.Background(), PaymasterAddress, nil)
 	if err != nil {
@@ -162,10 +162,10 @@ func main() {
 	}
 	fmt.Println("Paymaster balance after mint: ", balance)
 
-	tokenBalance, err = token.BalanceOf(nil, TokenAddress)
+	tokenBalance, err = tokenContract.BalanceOf(nil, TokenAddress)
 	if err != nil {
 		log.Panic(err)
 	}
-	fmt.Println("Paymaster token balance after mint: ", tokenBalance)
+	fmt.Println("Paymaster tokenContract balance after mint: ", tokenBalance)
 
 }

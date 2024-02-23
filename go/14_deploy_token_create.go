@@ -6,10 +6,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/zksync-sdk/zksync2-go/accounts"
 	"github.com/zksync-sdk/zksync2-go/clients"
-	"github.com/zksync-sdk/zksync2-go/utils"
 	"log"
 	"os"
-	"zksync2-examples/contracts/demo"
+	"zksync2-examples/contracts/token"
 )
 
 func main() {
@@ -31,58 +30,51 @@ func main() {
 		log.Panic(err)
 	}
 
-	// Read bytecode of Demo contract
-	demoBytecode, err := os.ReadFile("../solidity/demo/build/Demo.zbin")
+	tokenAbi, err := token.TokenMetaData.GetAbi()
 	if err != nil {
 		log.Panic(err)
 	}
 
-	// Read bytecode of Foo contract
-	fooBytecode, err := os.ReadFile("../solidity/demo/build/Foo.zbin")
+	constructor, err := tokenAbi.Pack("", "Crown", "Crown", uint8(18))
 	if err != nil {
 		log.Panic(err)
 	}
 
-	// Deploy smart contract
-	hash, err := wallet.Deploy(nil, accounts.Create2Transaction{
-		Bytecode:     demoBytecode,
-		Dependencies: [][]byte{fooBytecode},
+	//Deploy smart contract
+	hash, err := wallet.DeployWithCreate(nil, accounts.CreateTransaction{
+		Bytecode: common.FromHex(token.TokenMetaData.Bin),
+		Calldata: constructor,
 	})
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	fmt.Println("Transaction: ", hash)
 
 	// Wait unit transaction is finalized
-	_, err = client.WaitMined(context.Background(), hash)
+	receipt, err := client.WaitMined(context.Background(), hash)
 	if err != nil {
 		log.Panic(err)
 	}
 
 	// Get address of deployed smart contract
-	contractAddress, err := utils.Create2Address(
-		wallet.Address(),
-		demoBytecode,
-		nil,
-		nil,
-	)
-	if err != nil {
-		log.Panic(err)
-	}
-	fmt.Println("Smart contract address: ", contractAddress.String())
+	tokenAddress := receipt.ContractAddress
+	fmt.Println("Token address", tokenAddress.String())
 
-	// INTERACT WITH SMART CONTRACT
-
-	// Create instance of Demo contract
-	demoContract, err := demo.NewDemo(contractAddress, client)
+	// Create instance of token contract
+	tokenContract, err := token.NewToken(tokenAddress, client)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	// Execute GetFooName method
-	value, err := demoContract.GetFooName(nil)
+	symbol, err := tokenContract.Symbol(nil)
 	if err != nil {
 		log.Panic(err)
 	}
-	fmt.Println("Value:", value)
+	fmt.Println("Symbol: ", symbol)
+
+	decimals, err := tokenContract.Decimals(nil)
+	if err != nil {
+		log.Panic(err)
+	}
+	fmt.Println("Decimals: ", decimals)
 }

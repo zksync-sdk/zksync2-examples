@@ -63,10 +63,6 @@ func main() {
 		log.Panic(err)
 	}
 	contractAddress := receipt.ContractAddress
-
-	if err != nil {
-		log.Panic(err)
-	}
 	fmt.Println("Smart contract address: ", contractAddress.String())
 
 	// INTERACT WITH SMART CONTRACT
