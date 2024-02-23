@@ -19,18 +19,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v4.0.0
       - name: Run gofmt
-        run: |
-          cd go
-          fmt_output=$(gofmt -l .)
-
-          if [ -n "$fmt_output" ]; then
-            echo "Code not formatted correctly:"
-            echo "$fmt_output"
-            exit 1
-          else
-            echo "Code is formatted correctly"
-            exit 0
-          fi
+        run: cd go && make check-format
   lint-js:
     name: Check code format for JavaScript
     runs-on: ubuntu-latest

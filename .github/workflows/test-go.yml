@@ -28,4 +28,4 @@ jobs:
           docker-compose up -d
           popd
       - name: Run tests
-        run: cd go && go test ./test/...
+        run: cd go && make run-tests
