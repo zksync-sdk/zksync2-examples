@@ -51,15 +51,11 @@ func main() {
 	fmt.Println("Transaction: ", hash)
 
 	// Wait unit transaction is finalized
-	_, err = client.WaitMined(context.Background(), hash)
+	receipt, err := client.WaitMined(context.Background(), hash)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	// Get address of deployed smart contract
-	contractAddress, err := utils.Create2Address(wallet.Address(), bytecode, constructor, nil)
-	if err != nil {
-		log.Panic(err)
-	}
+	contractAddress := receipt.ContractAddress
 	fmt.Println("Paymaster address: ", contractAddress.String())
 }

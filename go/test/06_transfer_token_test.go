@@ -13,10 +13,7 @@ import (
 )
 
 func TestTransferToken(t *testing.T) {
-	tokenData := readToken()
 	amount := big.NewInt(5)
-	tokenAddress := common.HexToAddress(tokenData.L2Address)
-	receiver := common.HexToAddress(Receiver)
 
 	client, err := clients.Dial(ZkSyncEraProvider)
 	defer client.Close()
@@ -29,19 +26,19 @@ func TestTransferToken(t *testing.T) {
 	wallet, err := accounts.NewWallet(common.Hex2Bytes(PrivateKey), &client, ethClient)
 	assert.NoError(t, err, "NewWallet should not return an error")
 
-	tokenContract, err := erc20.NewIERC20(tokenAddress, client)
+	tokenContract, err := erc20.NewIERC20(L2Dai, client)
 	assert.NoError(t, err, "NewIERC20 should not return an error")
 
-	balanceBeforeTransferSender, err := wallet.Balance(context.Background(), tokenAddress, nil)
+	balanceBeforeTransferSender, err := wallet.Balance(context.Background(), L2Dai, nil)
 	assert.NoError(t, err, "Balance should not return an error")
 
-	balanceBeforeTransferReceiver, err := tokenContract.BalanceOf(nil, receiver)
+	balanceBeforeTransferReceiver, err := tokenContract.BalanceOf(nil, Receiver)
 	assert.NoError(t, err, "BalanceOf should not return an error")
 
 	tx, err := wallet.Transfer(nil, accounts.TransferTransaction{
-		To:     receiver,
+		To:     Receiver,
 		Amount: amount,
-		Token:  tokenAddress,
+		Token:  L2Dai,
 	})
 	assert.NoError(t, err, "Transfer should not return an error")
 
@@ -49,10 +46,10 @@ func TestTransferToken(t *testing.T) {
 	assert.NoError(t, err, "client.WaitMined should not return an error")
 	assert.NotNil(t, receipt.BlockHash, "Transaction should be mined")
 
-	balanceAfterTransferSender, err := wallet.Balance(context.Background(), tokenAddress, nil)
+	balanceAfterTransferSender, err := wallet.Balance(context.Background(), L2Dai, nil)
 	assert.NoError(t, err, "Balance should not return an error")
 
-	balanceAfterTransferReceiver, err := tokenContract.BalanceOf(nil, receiver)
+	balanceAfterTransferReceiver, err := tokenContract.BalanceOf(nil, Receiver)
 	assert.NoError(t, err, "BalanceOf should not return an error")
 
 	assert.True(t, new(big.Int).Sub(balanceBeforeTransferSender, balanceAfterTransferSender).Cmp(amount) >= 0, "Sender balance should be decreased")

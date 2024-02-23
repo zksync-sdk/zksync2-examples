@@ -8,7 +8,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/zksync-sdk/zksync2-go/accounts"
 	"github.com/zksync-sdk/zksync2-go/clients"
-	"github.com/zksync-sdk/zksync2-go/utils"
 	"log"
 	"math/big"
 	"os"
@@ -73,21 +72,12 @@ func main() {
 	fmt.Println("Transaction: ", hash)
 
 	// Wait unit transaction is finalized
-	_, err = client.WaitMined(context.Background(), hash)
+	receipt, err := client.WaitMined(context.Background(), hash)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	// Get address of deployed smart contract
-	contractAddress, err := utils.Create2Address(
-		wallet.Address(),
-		bytecode,
-		constructor,
-		salt,
-	)
-	if err != nil {
-		panic(err)
-	}
+	contractAddress := receipt.ContractAddress
 	fmt.Println("Smart contract address: ", contractAddress.String())
 
 	// INTERACT WITH SMART CONTRACT

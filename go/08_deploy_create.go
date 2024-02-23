@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/zksync-sdk/zksync2-go/accounts"
 	"github.com/zksync-sdk/zksync2-go/clients"
-	"github.com/zksync-sdk/zksync2-go/utils"
+	"github.com/zksync-sdk/zksync2-go/types"
 	"log"
 	"math/big"
 	"os"
@@ -40,28 +41,19 @@ func main() {
 	}
 
 	//Deploy smart contract
-	hash, err := wallet.Deploy(nil, accounts.Create2Transaction{Bytecode: bytecode})
+	hash, err := wallet.DeployWithCreate(nil, accounts.CreateTransaction{Bytecode: bytecode})
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Transaction: ", hash)
 
 	// Wait unit transaction is finalized
-	_, err = client.WaitMined(context.Background(), hash)
+	receipt, err := client.WaitMined(context.Background(), hash)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	// Get address of deployed smart contract
-	contractAddress, err := utils.Create2Address(
-		wallet.Address(),
-		bytecode,
-		nil,
-		nil,
-	)
-	if err != nil {
-		log.Panic(err)
-	}
+	contractAddress := receipt.ContractAddress
 	fmt.Println("Smart contract address", contractAddress.String())
 
 	// INTERACT WITH SMART CONTRACT
@@ -71,6 +63,36 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+
+	abi, err := storage.StorageMetaData.GetAbi()
+	if err != nil {
+		log.Panic(err)
+	}
+	// Encode set function arguments
+	setArguments, err := abi.Pack("set", big.NewInt(700))
+	if err != nil {
+		log.Panic(err)
+	}
+	gas, err := client.EstimateGasL2(context.Background(), types.CallMsg{
+		CallMsg: ethereum.CallMsg{
+			To:   &contractAddress,
+			From: wallet.Address(),
+			Data: setArguments,
+		},
+	})
+	if err != nil {
+		log.Panic(err)
+	}
+	fmt.Println("Gas: ", gas)
+
+	result, err := wallet.CallContract(context.Background(), accounts.CallMsg{
+		To:   &contractAddress,
+		Data: setArguments,
+	}, nil)
+	if err != nil {
+		log.Panic(err)
+	}
+	fmt.Println("Result: ", result)
 
 	// Execute Get method from storage smart contract
 	value, err := storageContract.Get(nil)
@@ -101,5 +123,36 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	fmt.Println("Value after Set method execution: ", value)
+	fmt.Println("Value after first Set method execution: ", value)
+
+	// INTERACT WITH SMART CONTRACT USING EIP-712 TRANSACTIONS
+	abi, err = storage.StorageMetaData.GetAbi()
+	if err != nil {
+		log.Panic(err)
+	}
+	// Encode set function arguments
+	setArguments, err = abi.Pack("set", big.NewInt(500))
+	if err != nil {
+		log.Panic(err)
+	}
+	// Execute set function
+	execute, err := wallet.SendTransaction(context.Background(), &accounts.Transaction{
+		To:   &contractAddress,
+		Data: setArguments,
+	})
+	if err != nil {
+		log.Panic(err)
+	}
+
+	_, err = client.WaitMined(context.Background(), execute)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	// Execute Get method again to check if state is changed
+	value, err = storageContract.Get(nil)
+	if err != nil {
+		log.Panic(err)
+	}
+	fmt.Println("Value after second Set method execution: ", value)
 }

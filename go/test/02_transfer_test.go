@@ -14,7 +14,6 @@ import (
 
 func TestTransfer(t *testing.T) {
 	amount := big.NewInt(7_000_000_000)
-	receiver := common.HexToAddress(Receiver)
 
 	client, err := clients.Dial(ZkSyncEraProvider)
 	defer client.Close()
@@ -30,11 +29,11 @@ func TestTransfer(t *testing.T) {
 	balanceBeforeTransferSender, err := wallet.Balance(context.Background(), utils.EthAddress, nil)
 	assert.NoError(t, err, "Balance should not return an error")
 
-	balanceBeforeTransferReceiver, err := client.BalanceAt(context.Background(), receiver, nil)
+	balanceBeforeTransferReceiver, err := client.BalanceAt(context.Background(), Receiver, nil)
 	assert.NoError(t, err, "BalanceAt should not return an error")
 
 	tx, err := wallet.Transfer(nil, accounts.TransferTransaction{
-		To:     receiver,
+		To:     Receiver,
 		Amount: amount,
 		Token:  utils.EthAddress,
 	})

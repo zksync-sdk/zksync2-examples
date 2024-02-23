@@ -52,15 +52,11 @@ func main() {
 	fmt.Println("Transaction: ", hash)
 
 	// Wait unit transaction is finalized
-	_, err = client.WaitMined(context.Background(), hash)
+	receipt, err := client.WaitMined(context.Background(), hash)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	receipt, err := client.TransactionReceipt(context.Background(), hash)
-	if err != nil {
-		log.Panic(err)
-	}
 	contractAddress := receipt.ContractAddress
 	fmt.Println("Paymaster address", contractAddress.String())
 }
