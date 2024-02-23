@@ -53,8 +53,8 @@ def deploy_contract(
 
     # Precompute the address of smart contract
     # Use this if there is a case where contract address should be known before deployment
-    deployer = PrecomputeContractDeployer(zk_web3)
-
+`    deployer = PrecomputeContractDeployer(zk_web3)
+`
     # Get contract ABI and bytecode information
     storage_contract = ContractEncoder.from_json(zk_web3, compiled_contract)[0]
 

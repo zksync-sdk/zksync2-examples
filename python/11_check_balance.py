@@ -5,7 +5,6 @@ from eth_account.signers.local import LocalAccount
 from eth_typing import HexStr
 from web3 import Web3
 
-from examples.utils import EnvPrivateKey
 from zksync2.account.wallet import Wallet
 from zksync2.module.module_builder import ZkSyncBuilder
 from zksync2.core.types import EthBlockParams
@@ -13,7 +12,7 @@ from zksync2.core.types import EthBlockParams
 
 def check_balance():
     # Get the private key from OS environment variables
-    PRIVATE_KEY = bytes.fromhex(os.environ.get("PRIVATE_KEY"))
+    PRIVATE_KEY = HexStr("0xc273a8616a4c58de9e58750fd2672d07b10497d64cd91b5942cce0909aaa391a")
 
     # Set a provider
     ZKSYNC_PROVIDER = "https://sepolia.era.zksync.dev"
