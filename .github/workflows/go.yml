@@ -1,9 +1,10 @@
-name: Run tests Go
+name: Go
 on:
   workflow_dispatch:
   pull_request:
-    branch: main
+    branches: [main]
     types: [ opened, reopened, synchronize ]
+    paths: [go]
 
 permissions:
   contents: read # for checkout
@@ -14,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Install Go
@@ -29,3 +30,15 @@ jobs:
           popd
       - name: Run tests
         run: cd go && make run-tests
+  lint:
+    name: Check code format for Go
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install Go
+        uses: actions/setup-go@v4.0.0
+      - name: Run gofmt
+        run: cd go && make check-format
