@@ -35,8 +35,8 @@ async function main() {
                 minimalAllowance: 1,
                 innerInput: new Uint8Array(),
             }),
-        }
-    })
+        },
+    });
     await paymasterTx.wait();
     console.log(`Value: ${await storage.get()}`);
 }

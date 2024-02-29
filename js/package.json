@@ -17,7 +17,6 @@
     "dependencies": {
         "zksync-ethers": "^6.4.0"
     },
-
     "peerDependencies": {
         "ethers": "^6.7.1"
     },
