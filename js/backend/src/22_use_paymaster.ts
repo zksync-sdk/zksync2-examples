@@ -9,7 +9,7 @@ const wallet = new Wallet(PRIVATE_KEY, provider, ethProvider);
 const tokenAddress = "0x927488F48ffbc32112F1fF721759649A89721F8F"; // Crown token which can be minted for free
 const paymasterAddress = "0x13D0D8550769f59aa241a41897D4859c87f7Dd46"; // Paymaster for Crown token
 const token = new ethers.Interface(
-    require("../../solidity/custom_paymaster/token/build/Token.json").abi,
+    require("../../../solidity/custom_paymaster/token/build/Token.json").abi,
 );
 
 /*

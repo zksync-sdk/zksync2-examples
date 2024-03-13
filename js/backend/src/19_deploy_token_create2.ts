@@ -6,7 +6,7 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const wallet = new Wallet(PRIVATE_KEY, provider);
 
 async function main() {
-    const conf = require("../../solidity/custom_paymaster/token/build/Token.json");
+    const conf = require("../../../solidity/custom_paymaster/token/build/Token.json");
     const abi = conf.abi;
     const bytecode: string = conf.bytecode;
 

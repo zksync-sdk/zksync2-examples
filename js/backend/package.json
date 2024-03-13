@@ -15,7 +15,7 @@
         "typescript": "^5.1.6"
     },
     "dependencies": {
-        "zksync-ethers": "^6.4.0"
+        "zksync-ethers": "^6.5.0"
     },
     "peerDependencies": {
         "ethers": "^6.7.1"
@@ -24,8 +24,8 @@
         "test:prepare": "ts-node scripts/setup.ts",
         "test:wait": "ts-node scripts/wait.ts",
         "test": "mocha -r ts-node/register tests/*.test.ts",
-        "lint": "prettier . --write",
-        "lint:check": "prettier . --check",
+        "lint": "prettier .. --write",
+        "lint:check": "prettier .. --check",
         "watch": "tsc --watch"
     }
 }

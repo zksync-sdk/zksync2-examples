@@ -4,9 +4,11 @@
 
 Examples on how to interact with zkSync Era network using different SDKs.
 
-- [Go](go)
-- [JavaScript](js)
-- [Python](python)
+- [Go](go).
+- JavaScript: 
+  - [backend](js/backend),
+  - [frontend](js/frontend). 
+- [Python](python).
 
 ## 🤝 Contributing
 

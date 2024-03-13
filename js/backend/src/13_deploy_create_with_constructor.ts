@@ -5,7 +5,7 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const wallet = new Wallet(PRIVATE_KEY, provider);
 
 async function main() {
-    const conf = require("../../solidity/incrementer/build/combined.json");
+    const conf = require("../../../solidity/incrementer/build/combined.json");
     const abi = conf.contracts["Incrementer.sol:Incrementer"].abi;
     const bytecode: string = conf.contracts["Incrementer.sol:Incrementer"].bin;
 

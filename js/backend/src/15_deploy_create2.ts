@@ -9,7 +9,7 @@ const tokenAddress = "0x927488F48ffbc32112F1fF721759649A89721F8F"; // Crown toke
 const paymasterAddress = "0x13D0D8550769f59aa241a41897D4859c87f7Dd46"; // Paymaster for Crown token
 
 async function main() {
-    const conf = require("../../solidity/storage/build/combined.json");
+    const conf = require("../../../solidity/storage/build/combined.json");
     const abi = conf.contracts["Storage.sol:Storage"].abi;
     const bytecode: string = conf.contracts["Storage.sol:Storage"].bin;
 

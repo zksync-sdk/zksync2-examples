@@ -15,7 +15,7 @@ describe("ContractFactory", () => {
     const l1DAI = l1Tokens[0].address;
 
     it("should deploy a contract without constructor using CREATE opcode", async () => {
-        const conf = require("../../solidity/storage/build/combined.json");
+        const conf = require("../../../solidity/storage/build/combined.json");
         const abi = conf.contracts["Storage.sol:Storage"].abi;
         const bytecode: string = conf.contracts["Storage.sol:Storage"].bin;
 
@@ -36,7 +36,7 @@ describe("ContractFactory", () => {
     }).timeout(10_000);
 
     it("should deploy a contract with a constructor using CREATE opcode", async () => {
-        const conf = require("../../solidity/incrementer/build/combined.json");
+        const conf = require("../../../solidity/incrementer/build/combined.json");
         const abi = conf.contracts["Incrementer.sol:Incrementer"].abi;
         const bytecode: string = conf.contracts["Incrementer.sol:Incrementer"].bin;
 
@@ -57,7 +57,7 @@ describe("ContractFactory", () => {
     }).timeout(10_000);
 
     it("should deploy a contract with dependencies using CREATE opcode", async () => {
-        const conf = require("../../solidity/demo/build/combined.json");
+        const conf = require("../../../solidity/demo/build/combined.json");
         const abi = conf.contracts["Demo.sol:Demo"].abi;
         const bytecode: string = conf.contracts["Demo.sol:Demo"].bin;
 
@@ -74,7 +74,7 @@ describe("ContractFactory", () => {
     }).timeout(10_000);
 
     it("should deploy a token using CREATE opcode", async () => {
-        const conf = require("../../solidity/custom_paymaster/token/build/Token.json");
+        const conf = require("../../../solidity/custom_paymaster/token/build/Token.json");
         const abi = conf.abi;
         const bytecode: string = conf.bytecode;
 
@@ -87,7 +87,7 @@ describe("ContractFactory", () => {
     }).timeout(10_000);
 
     it("should deploy an account using CREATE opcode", async () => {
-        const conf = require("../../solidity/custom_paymaster/paymaster/build/Paymaster.json");
+        const conf = require("../../../solidity/custom_paymaster/paymaster/build/Paymaster.json");
         const abi = conf.abi;
         const bytecode: string = conf.bytecode;
 
@@ -99,7 +99,7 @@ describe("ContractFactory", () => {
     }).timeout(10_000);
 
     it("should deploy a contract without constructor using CREATE2 opcode", async () => {
-        const conf = require("../../solidity/storage/build/combined.json");
+        const conf = require("../../../solidity/storage/build/combined.json");
         const abi = conf.contracts["Storage.sol:Storage"].abi;
         const bytecode: string = conf.contracts["Storage.sol:Storage"].bin;
 
@@ -122,7 +122,7 @@ describe("ContractFactory", () => {
     }).timeout(10_000);
 
     it("should deploy a contract with a constructor using CREATE2 opcode", async () => {
-        const conf = require("../../solidity/incrementer/build/combined.json");
+        const conf = require("../../../solidity/incrementer/build/combined.json");
         const abi = conf.contracts["Incrementer.sol:Incrementer"].abi;
         const bytecode: string = conf.contracts["Incrementer.sol:Incrementer"].bin;
 
@@ -145,7 +145,7 @@ describe("ContractFactory", () => {
     }).timeout(10_000);
 
     it("should deploy a contract with dependencies using CREATE2 opcode", async () => {
-        const conf = require("../../solidity/demo/build/combined.json");
+        const conf = require("../../../solidity/demo/build/combined.json");
         const abi = conf.contracts["Demo.sol:Demo"].abi;
         const bytecode: string = conf.contracts["Demo.sol:Demo"].bin;
 
@@ -165,7 +165,7 @@ describe("ContractFactory", () => {
     }).timeout(10_000);
 
     it("should deploy a token using CREATE2 opcode", async () => {
-        const conf = require("../../solidity/custom_paymaster/token/build/Token.json");
+        const conf = require("../../../solidity/custom_paymaster/token/build/Token.json");
         const abi = conf.abi;
         const bytecode: string = conf.bytecode;
 
@@ -180,7 +180,7 @@ describe("ContractFactory", () => {
     }).timeout(10_000);
 
     it("should deploy an account using CREATE2 opcode", async () => {
-        const conf = require("../../solidity/custom_paymaster/paymaster/build/Paymaster.json");
+        const conf = require("../../../solidity/custom_paymaster/paymaster/build/Paymaster.json");
         const abi = conf.abi;
         const bytecode: string = conf.bytecode;
 
