@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
     types: [ opened, reopened, synchronize ]
-    paths: [ "js/**" ]
+    paths: [ "js/backend/**" ]
 
 permissions:
   contents: read # for checkout
