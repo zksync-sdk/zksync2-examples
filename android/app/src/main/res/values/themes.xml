@@ -1,0 +1,24 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.ZkSyncApp" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowBackground">@color/color_1</item>
+        <item name="android:statusBarColor">@color/color_1</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.ZkSyncApp" parent="Base.Theme.ZkSyncApp" />
+
+    <style name="AppTheme.BaseStarting" parent="Theme.SplashScreen">
+        <!-- Set the splash screen background  -->
+        <item name="windowSplashScreenBackground">@color/color_3</item>
+        <!-- Use windowSplashScreenAnimatedIcon to add a drawable or an animated
+             drawable. -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/img_zk_logo</item>
+        <!-- Set the theme of the Activity that follows your splash screen. -->
+        <item name="postSplashScreenTheme">@style/Theme.ZkSyncApp</item>
+    </style>
+
+    <style name="AppTheme.Starting" parent="AppTheme.BaseStarting"/>
+</resources>

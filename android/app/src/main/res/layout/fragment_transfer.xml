@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.transfer.TransferFragment">
+
+    <!-- loading -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/connection_img"
+        android:layout_width="0dp"
+        android:layout_height="240dp"
+        android:layout_marginHorizontal="64dp"
+        android:maxHeight="240dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.25"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true" />
+
+    <TextView
+        android:id="@+id/connection_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="@string/connection"
+        android:textAppearance="@style/Text.Headline6"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/connection_img" />
+
+    <Button
+        android:id="@+id/btn_connection"
+        style="@style/Button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="36dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/action_connect"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_connection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="connection_img, connection_text" />
+
+    <!-- data -->
+
+    <TextView
+        android:id="@+id/bridge_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bridge"
+        android:textAllCaps="true"
+        android:textAppearance="@style/Text.Headline6"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.08" />
+
+    <com.zk.android.app.presentation.transfer.widget.FromWalletView
+        android:id="@+id/balance_from"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="16dp"
+        android:stateListAnimator="@animator/views_animation_selector"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bridge_title" />
+
+    <com.zk.android.app.presentation.transfer.widget.ToWalletView
+        android:id="@+id/balance_to"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="24dp"
+        android:stateListAnimator="@animator/views_animation_selector"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/balance_from" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/balance_sending"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="84dp"
+        android:layout_marginVertical="64dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/btn_transfer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/balance_to"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/lottie_sending" />
+
+    <Button
+        android:id="@+id/btn_transfer"
+        style="@style/Button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="36dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/action_send"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="bridge_title, balance_from, balance_to, balance_sending, btn_transfer"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

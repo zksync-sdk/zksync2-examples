@@ -1,0 +1,49 @@
+[versions]
+agp = "8.3.2"
+kotlin = "1.9.21"
+coroutinesVersion = "1.6.1"
+coreKtx = "1.13.1"
+appcompat = "1.6.1"
+material = "1.12.0"
+splashscreen = "1.1.0-rc01"
+constraintlayout = "2.1.4"
+navigationFragmentKtx = "2.7.7"
+navigationUiKtx = "2.7.7"
+orbitVersion = "7.1.0"
+lifecycleVersion = "2.6.1"
+hiltVersion = "2.48.1"
+androidxHiltVersion = "1.0.0"
+lottieVersion = "3.4.0"
+zksyncVersion = "0.2.1"
+web3jVersion = "4.9.7"
+web3AndroidjVersion = "4.8.9-android"
+
+
+[libraries]
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutinesVersion" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
+lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleVersion" }
+lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleVersion" }
+orbit-viewmodel = { group = "org.orbit-mvi", name = "orbit-viewmodel", version.ref = "orbitVersion" }
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltVersion" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hiltVersion" }
+hilt-navigation-fragment= { group = "androidx.hilt", name = "hilt-navigation-fragment", version.ref = "androidxHiltVersion" }
+androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "androidxHiltVersion" }
+zksync = { group = "io.zksync", name = "zksync2", version.ref = "zksyncVersion" }
+web3j-core = { group = "org.web3j", name = "core", version.ref = "web3AndroidjVersion" }
+web3j-crypto = { group = "org.web3j", name = "crypto", version.ref = "web3jVersion" }
+lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottieVersion" }
+
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlinKapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+daggerHilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltVersion" }
+

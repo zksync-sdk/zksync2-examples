@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ZkSyncApp" parent="Base.Theme.ZkSyncApp" >
+        <item name="android:navigationBarColor">@color/color_1</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+</resources>

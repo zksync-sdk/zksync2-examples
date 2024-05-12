@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">ZkSync</string>
+    <string name="connection">Connecting to Wallet</string>
+    <string name="connection_error">Check your internet connection and try again</string>
+    <string name="action_connect">Connect</string>
+
+    <string name="network_ethereum">Ethereum</string>
+    <string name="network_zk">ZkSync</string>
+    <string name="coin_eth">Eth</string>
+
+    <!-- bridge -->
+    <string name="bridge">Bridge</string>
+    <string name="bridge_from">From</string>
+    <string name="bridge_to">To</string>
+    <string name="bridge_balance">Balance:</string>
+    <string name="action_send">Send</string>
+    <string name="deposit_completed">Transaction is being processed</string>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme.Starting" parent="AppTheme.BaseStarting">
+        <item name="android:windowSplashScreenBrandingImage">@drawable/img_splash_brand_white</item>
+    </style>
+</resources>

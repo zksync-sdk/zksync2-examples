@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:parentTag="com.zk.android.app.presentation.transfer.widget.ToWalletView">
+
+    <TextView
+        android:id="@+id/label_to"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bridge_to"
+        android:textAppearance="@style/Text"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@id/network_name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/network_name" />
+
+    <TextView
+        android:id="@+id/network_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_gray_overlay"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:text="@string/network_zk"
+        android:textAppearance="@style/Text"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@id/label_to" />
+
+    <TextView
+        android:id="@+id/balance"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical"
+        android:text="@string/bridge_balance"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/network_name" />
+
+    <TextView
+        android:id="@+id/balance_value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@id/balance"
+        app:layout_constraintStart_toEndOf="@id/balance"
+        app:layout_constraintTop_toTopOf="@id/balance"
+        tools:text="0.12342" />
+</merge>
